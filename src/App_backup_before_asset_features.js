@@ -5,16 +5,14 @@ import {
   Chart as ChartJS,
   ArcElement,
   BarElement,
-  LineElement,
-  PointElement,
   CategoryScale,
   LinearScale,
   Tooltip,
   Legend,
 } from "chart.js";
-import { Doughnut, Bar, Line } from "react-chartjs-2";
+import { Doughnut, Bar } from "react-chartjs-2";
 
-ChartJS.register(ArcElement, BarElement, LineElement, PointElement, CategoryScale, LinearScale, Tooltip, Legend);
+ChartJS.register(ArcElement, BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
 const CATS_EXP = ["식비","카페","교통","쇼핑","의료","문화/여가","구독","통신","저축","대출상환","기타"];
 const CATS_INC = ["이월","월급","용돈","부업","이자","환급","기타수입"];
@@ -82,19 +80,6 @@ export default function App() {
   const [chartYear, setChartYear] = useState(new Date().getFullYear());
   const [chartMonth, setChartMonth] = useState(new Date().getMonth());
   const [txs, setTxs] = useState([]);
-  const [accounts, setAccounts] = useState(() => JSON.parse(localStorage.getItem("accounts") || "[]"));
-  const [cards, setCards] = useState(() => JSON.parse(localStorage.getItem("cards") || "[]"));
-  const [subs, setSubs] = useState(() => JSON.parse(localStorage.getItem("subs") || "[]"));
-
-  const [accountName, setAccountName] = useState("");
-  const [accountBalance, setAccountBalance] = useState("");
-
-  const [cardName, setCardName] = useState("");
-  const [cardPayDay, setCardPayDay] = useState("");
-
-  const [subName, setSubName] = useState("");
-  const [subAmount, setSubAmount] = useState("");
-  const [subDay, setSubDay] = useState("");
 
   const [editingTxId, setEditingTxId] = useState(null);
   const [type, setType] = useState("expense");
@@ -219,141 +204,6 @@ export default function App() {
       type: l.type,
       memo: l.memo || "",
     })));
-  };
-
-  const saveLocal = (key, value) => {
-    localStorage.setItem(key, JSON.stringify(value));
-  };
-
-  const addAccount = () => {
-    if (!accountName) return alert("계좌명을 입력해주세요");
-    const next = [...accounts, { id: Date.now(), name: accountName, balance: Number(accountBalance || 0) }];
-    setAccounts(next);
-    saveLocal("accounts", next);
-    setAccountName("");
-    setAccountBalance("");
-    showPopup("계좌가 추가됐어요.", "계좌 추가 완료", "🏦");
-  };
-
-  const deleteAccount = (id) => {
-    const next = accounts.filter(a => a.id !== id);
-    setAccounts(next);
-    saveLocal("accounts", next);
-  };
-
-  const addCard = () => {
-    if (!cardName || !cardPayDay) return alert("카드명과 결제일을 입력해주세요");
-    const next = [...cards, { id: Date.now(), name: cardName, payDay: Number(cardPayDay) }];
-    setCards(next);
-    saveLocal("cards", next);
-    setCardName("");
-    setCardPayDay("");
-    showPopup("카드가 추가됐어요.", "카드 추가 완료", "💳");
-  };
-
-  const deleteCard = (id) => {
-    const next = cards.filter(c => c.id !== id);
-    setCards(next);
-    saveLocal("cards", next);
-  };
-
-  const addSub = () => {
-    if (!subName || !subAmount) return alert("구독명과 금액을 입력해주세요");
-    const next = [...subs, { id: Date.now(), name: subName, amount: Number(subAmount), day: Number(subDay || 1) }];
-    setSubs(next);
-    saveLocal("subs", next);
-    setSubName("");
-    setSubAmount("");
-    setSubDay("");
-    showPopup("구독이 추가됐어요.", "구독 추가 완료", "📱");
-  };
-
-  const deleteSub = (id) => {
-    const next = subs.filter(s => s.id !== id);
-    setSubs(next);
-    saveLocal("subs", next);
-  };
-
-  const today = new Date().getDate();
-
-  const totalAccountBalance = accounts.reduce((sum, a) => sum + Number(a.balance || 0), 0);
-  const totalSubMonthly = subs.reduce((sum, s) => sum + Number(s.amount || 0), 0);
-
-  const currentMonthExpenseByBudget = budgets.reduce((sum, b) => {
-    return sum + txs
-      .filter(t => {
-        const d = new Date(t.date);
-        return t.type === "expense"
-          && t.category === b.category
-          && d.getFullYear() === new Date().getFullYear()
-          && d.getMonth() === new Date().getMonth();
-      })
-      .reduce((a, t) => a + Number(t.amount), 0);
-  }, 0);
-
-  const currentBudgetTotal = budgets.reduce((sum, b) => sum + Number(b.amount), 0);
-  const budgetCarryOver = Math.max(0, currentBudgetTotal - currentMonthExpenseByBudget);
-  const nextMonthBudgetTotal = currentBudgetTotal + budgetCarryOver;
-
-  const getSavingPrediction = (sv) => {
-    const savingTxs = txs
-      .filter(t => t.type === "expense" && (t.category === "저축" || t.category === sv.name))
-      .sort((a,b) => new Date(a.date) - new Date(b.date));
-
-    const monthlyMap = {};
-
-    savingTxs.forEach(t => {
-      const d = new Date(t.date);
-      const key = `${d.getFullYear()}-${d.getMonth() + 1}`;
-      monthlyMap[key] = (monthlyMap[key] || 0) + Number(t.amount);
-    });
-
-    const values = Object.values(monthlyMap);
-    const avg = values.length ? values.reduce((a,b) => a + b, 0) / values.length : 0;
-    const left = Math.max(0, Number(sv.target) - Number(sv.current));
-
-    if (!avg || left <= 0) return "예상 불가";
-
-    const months = Math.ceil(left / avg);
-    const targetDate = new Date();
-    targetDate.setMonth(targetDate.getMonth() + months);
-
-    return `${targetDate.getFullYear()}년 ${targetDate.getMonth() + 1}월 예상`;
-  };
-
-  const assetTrendLabels = Array.from({ length: 6 }, (_, i) => {
-    const d = new Date();
-    d.setMonth(d.getMonth() - (5 - i));
-    return `${d.getMonth() + 1}월`;
-  });
-
-  const assetTrendData = Array.from({ length: 6 }, (_, i) => {
-    const d = new Date();
-    d.setMonth(d.getMonth() - (5 - i));
-
-    const monthIncome = txs
-      .filter(t => {
-        const td = new Date(t.date);
-        return t.type === "income" && td.getFullYear() === d.getFullYear() && td.getMonth() === d.getMonth();
-      })
-      .reduce((sum,t) => sum + Number(t.amount), 0);
-
-    const monthExpense = txs
-      .filter(t => {
-        const td = new Date(t.date);
-        return t.type === "expense" && td.getFullYear() === d.getFullYear() && td.getMonth() === d.getMonth();
-      })
-      .reduce((sum,t) => sum + Number(t.amount), 0);
-
-    return totalAccountBalance + monthIncome - monthExpense;
-  });
-
-  const getCardDDay = (payDay) => {
-    const d = Number(payDay);
-    if (!d) return "";
-    if (d >= today) return `D-${d - today}`;
-    const last = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate();
-    return `D-${last - today + d}`;
   };
 
   const realTxs = txs.filter(t => t.type !== "transfer");
@@ -970,8 +820,6 @@ export default function App() {
           ["tx", "내역"],
           ["budget", "예산"],
           ["saving", "저축"],
-          ["assets", "자산"],
-          ["subs", "구독"],
           ["loan", "대출"],
           ["chart", "분석"],
           ["settings", "설정"],
@@ -1138,9 +986,11 @@ export default function App() {
               </div>
               <div className="banner-row">
                 <div className="banner-mini">총 예산<span>{won(budgets.reduce((s,b) => s + b.amount, 0))}</span></div>
-                <div className="banner-mini">사용<span>{won(currentMonthExpenseByBudget)}</span></div>
-                <div className="banner-mini">자동 이월<span>{won(budgetCarryOver)}</span></div>
-                <div className="banner-mini">다음달 예산<span>{won(nextMonthBudgetTotal)}</span></div>
+                <div className="banner-mini">사용<span>{won(budgets.reduce((sum,b) => {
+                  return sum + txs
+                    .filter(t => t.type === "expense" && t.category === b.category)
+                    .reduce((a,t) => a + Number(t.amount), 0);
+                }, 0))}</span></div>
               </div>
             </section>
 
@@ -1249,11 +1099,6 @@ export default function App() {
                           <b>{won(left)}</b>
                         </div>
 
-                        <div className="saving-detail">
-                          <span>예상 달성일</span>
-                          <b>{getSavingPrediction(sv)}</b>
-                        </div>
-
                         <div className="saving-actions">
                           <button className="btn btn-secondary" onClick={() => editSaving(sv)}>수정</button>
                           <button className="btn btn-danger" onClick={() => deleteSaving(sv.id)}>삭제</button>
@@ -1263,105 +1108,6 @@ export default function App() {
                   })}
                 </div>
               )}
-            </section>
-          </>
-        )}
-
-        {tab === "assets" && (
-          <>
-            <section className="banner asset-banner">
-              <div className="banner-lbl">총 계좌 잔액</div>
-              <div className="banner-main">{won(totalAccountBalance)}</div>
-              <div className="banner-row">
-                <div className="banner-mini">계좌 수<span>{accounts.length}개</span></div>
-                <div className="banner-mini">카드 수<span>{cards.length}개</span></div>
-              </div>
-            </section>
-
-            <section className="card">
-              <div className="card-title">계좌별 잔액 관리</div>
-              <input className="form-input" placeholder="계좌명 예: 국민은행, 카카오뱅크" value={accountName} onChange={e => setAccountName(e.target.value)} />
-              <input className="form-input" placeholder="현재 잔액" type="number" value={accountBalance} onChange={e => setAccountBalance(e.target.value)} />
-              <button className="btn btn-primary asset-add-btn" onClick={addAccount}>계좌 추가</button>
-
-              <div className="asset-list">
-                {accounts.map(a => (
-                  <div className="asset-item" key={a.id}>
-                    <div>
-                      <b>{a.name}</b>
-                      <span>{won(a.balance)}</span>
-                    </div>
-                    <button onClick={() => deleteAccount(a.id)}>삭제</button>
-                  </div>
-                ))}
-              </div>
-            </section>
-
-            <section className="card">
-              <div className="card-title">월별 자산 추이</div>
-              <div className="chart-box wide">
-                <Line
-                  data={{
-                    labels: assetTrendLabels,
-                    datasets: [{
-                      label: "예상 자산",
-                      data: assetTrendData,
-                    }],
-                  }}
-                />
-              </div>
-              <div className="hint">계좌 잔액과 월별 수입/지출을 기준으로 계산한 간단 추이예요.</div>
-            </section>
-
-            <section className="card">
-              <div className="card-title">카드 결제일 관리</div>
-              <input className="form-input" placeholder="카드명 예: 신한카드" value={cardName} onChange={e => setCardName(e.target.value)} />
-              <input className="form-input" placeholder="결제일 예: 25" type="number" value={cardPayDay} onChange={e => setCardPayDay(e.target.value)} />
-              <button className="btn btn-primary asset-add-btn" onClick={addCard}>카드 추가</button>
-
-              <div className="asset-list">
-                {cards.map(c => (
-                  <div className="asset-item" key={c.id}>
-                    <div>
-                      <b>{c.name}</b>
-                      <span>매월 {c.payDay}일 · {getCardDDay(c.payDay)}</span>
-                    </div>
-                    <button onClick={() => deleteCard(c.id)}>삭제</button>
-                  </div>
-                ))}
-              </div>
-            </section>
-          </>
-        )}
-
-        {tab === "subs" && (
-          <>
-            <section className="banner sub-banner">
-              <div className="banner-lbl">월 구독료</div>
-              <div className="banner-main">{won(totalSubMonthly)}</div>
-              <div className="banner-row">
-                <div className="banner-mini">구독 수<span>{subs.length}개</span></div>
-              </div>
-            </section>
-
-            <section className="card">
-              <div className="card-title">구독 관리</div>
-              <input className="form-input" placeholder="구독명 예: 넷플릭스, 유튜브" value={subName} onChange={e => setSubName(e.target.value)} />
-              <input className="form-input" placeholder="월 구독료" type="number" value={subAmount} onChange={e => setSubAmount(e.target.value)} />
-              <input className="form-input" placeholder="결제일 예: 15" type="number" value={subDay} onChange={e => setSubDay(e.target.value)} />
-              <button className="btn btn-primary asset-add-btn" onClick={addSub}>구독 추가</button>
-
-              <div className="asset-list">
-                {subs.map(su => (
-                  <div className="asset-item" key={su.id}>
-                    <div>
-                      <b>{su.name}</b>
-                      <span>{won(su.amount)} · 매월 {su.day}일</span>
-                    </div>
-                    <button onClick={() => deleteSub(su.id)}>삭제</button>
-                  </div>
-                ))}
-              </div>
             </section>
           </>
         )}

@@ -5,16 +5,14 @@ import {
   Chart as ChartJS,
   ArcElement,
   BarElement,
-  LineElement,
-  PointElement,
   CategoryScale,
   LinearScale,
   Tooltip,
   Legend,
 } from "chart.js";
-import { Doughnut, Bar, Line } from "react-chartjs-2";
+import { Doughnut, Bar } from "react-chartjs-2";
 
-ChartJS.register(ArcElement, BarElement, LineElement, PointElement, CategoryScale, LinearScale, Tooltip, Legend);
+ChartJS.register(ArcElement, BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
 const CATS_EXP = ["식비","카페","교통","쇼핑","의료","문화/여가","구독","통신","저축","대출상환","기타"];
 const CATS_INC = ["이월","월급","용돈","부업","이자","환급","기타수입"];
@@ -278,75 +276,6 @@ export default function App() {
 
   const totalAccountBalance = accounts.reduce((sum, a) => sum + Number(a.balance || 0), 0);
   const totalSubMonthly = subs.reduce((sum, s) => sum + Number(s.amount || 0), 0);
-
-  const currentMonthExpenseByBudget = budgets.reduce((sum, b) => {
-    return sum + txs
-      .filter(t => {
-        const d = new Date(t.date);
-        return t.type === "expense"
-          && t.category === b.category
-          && d.getFullYear() === new Date().getFullYear()
-          && d.getMonth() === new Date().getMonth();
-      })
-      .reduce((a, t) => a + Number(t.amount), 0);
-  }, 0);
-
-  const currentBudgetTotal = budgets.reduce((sum, b) => sum + Number(b.amount), 0);
-  const budgetCarryOver = Math.max(0, currentBudgetTotal - currentMonthExpenseByBudget);
-  const nextMonthBudgetTotal = currentBudgetTotal + budgetCarryOver;
-
-  const getSavingPrediction = (sv) => {
-    const savingTxs = txs
-      .filter(t => t.type === "expense" && (t.category === "저축" || t.category === sv.name))
-      .sort((a,b) => new Date(a.date) - new Date(b.date));
-
-    const monthlyMap = {};
-
-    savingTxs.forEach(t => {
-      const d = new Date(t.date);
-      const key = `${d.getFullYear()}-${d.getMonth() + 1}`;
-      monthlyMap[key] = (monthlyMap[key] || 0) + Number(t.amount);
-    });
-
-    const values = Object.values(monthlyMap);
-    const avg = values.length ? values.reduce((a,b) => a + b, 0) / values.length : 0;
-    const left = Math.max(0, Number(sv.target) - Number(sv.current));
-
-    if (!avg || left <= 0) return "예상 불가";
-
-    const months = Math.ceil(left / avg);
-    const targetDate = new Date();
-    targetDate.setMonth(targetDate.getMonth() + months);
-
-    return `${targetDate.getFullYear()}년 ${targetDate.getMonth() + 1}월 예상`;
-  };
-
-  const assetTrendLabels = Array.from({ length: 6 }, (_, i) => {
-    const d = new Date();
-    d.setMonth(d.getMonth() - (5 - i));
-    return `${d.getMonth() + 1}월`;
-  });
-
-  const assetTrendData = Array.from({ length: 6 }, (_, i) => {
-    const d = new Date();
-    d.setMonth(d.getMonth() - (5 - i));
-
-    const monthIncome = txs
-      .filter(t => {
-        const td = new Date(t.date);
-        return t.type === "income" && td.getFullYear() === d.getFullYear() && td.getMonth() === d.getMonth();
-      })
-      .reduce((sum,t) => sum + Number(t.amount), 0);
-
-    const monthExpense = txs
-      .filter(t => {
-        const td = new Date(t.date);
-        return t.type === "expense" && td.getFullYear() === d.getFullYear() && td.getMonth() === d.getMonth();
-      })
-      .reduce((sum,t) => sum + Number(t.amount), 0);
-
-    return totalAccountBalance + monthIncome - monthExpense;
-  });
 
   const getCardDDay = (payDay) => {
     const d = Number(payDay);
@@ -1138,9 +1067,11 @@ export default function App() {
               </div>
               <div className="banner-row">
                 <div className="banner-mini">총 예산<span>{won(budgets.reduce((s,b) => s + b.amount, 0))}</span></div>
-                <div className="banner-mini">사용<span>{won(currentMonthExpenseByBudget)}</span></div>
-                <div className="banner-mini">자동 이월<span>{won(budgetCarryOver)}</span></div>
-                <div className="banner-mini">다음달 예산<span>{won(nextMonthBudgetTotal)}</span></div>
+                <div className="banner-mini">사용<span>{won(budgets.reduce((sum,b) => {
+                  return sum + txs
+                    .filter(t => t.type === "expense" && t.category === b.category)
+                    .reduce((a,t) => a + Number(t.amount), 0);
+                }, 0))}</span></div>
               </div>
             </section>
 
@@ -1249,11 +1180,6 @@ export default function App() {
                           <b>{won(left)}</b>
                         </div>
 
-                        <div className="saving-detail">
-                          <span>예상 달성일</span>
-                          <b>{getSavingPrediction(sv)}</b>
-                        </div>
-
                         <div className="saving-actions">
                           <button className="btn btn-secondary" onClick={() => editSaving(sv)}>수정</button>
                           <button className="btn btn-danger" onClick={() => deleteSaving(sv.id)}>삭제</button>
@@ -1295,22 +1221,6 @@ export default function App() {
                   </div>
                 ))}
               </div>
-            </section>
-
-            <section className="card">
-              <div className="card-title">월별 자산 추이</div>
-              <div className="chart-box wide">
-                <Line
-                  data={{
-                    labels: assetTrendLabels,
-                    datasets: [{
-                      label: "예상 자산",
-                      data: assetTrendData,
-                    }],
-                  }}
-                />
-              </div>
-              <div className="hint">계좌 잔액과 월별 수입/지출을 기준으로 계산한 간단 추이예요.</div>
             </section>
 
             <section className="card">
