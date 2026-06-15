@@ -1,0 +1,81 @@
+cat > src/styles/global.css <<'EOF'
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#FFF0F5;color:#3D1525}
+
+.desktop-wrap{display:flex;min-height:100vh}
+.sidebar{width:220px;background:#fff;border-right:1px solid #FFE0ED;padding:24px 16px;position:fixed;top:0;left:0;height:100vh}
+.logo{font-size:22px;font-weight:800;color:#E05585;margin-bottom:20px}
+.logo span{color:#FFB3CC;font-weight:400}
+
+.nav-btn{display:block;width:100%;padding:10px 12px;border-radius:12px;border:none;background:none;font-size:13px;color:#C04070;cursor:pointer;text-align:left;margin-bottom:4px}
+.nav-btn.active{background:#FFE8F0;color:#E05585;font-weight:700}
+
+.main-content{margin-left:220px;flex:1;padding:28px 32px;max-width:1100px}
+
+.banner{background:#E05585;border-radius:20px;padding:24px 28px;color:#fff;margin-bottom:20px}
+.banner-lbl{font-size:11px;opacity:.8;margin-bottom:4px}
+.banner-main{font-size:36px;font-weight:800;margin-bottom:14px}
+.banner-row{display:flex;gap:32px}
+.banner-mini{font-size:11px;opacity:.8}
+.banner-mini span{font-size:15px;font-weight:700;display:block;margin-top:3px}
+
+.card{background:#fff;border-radius:16px;padding:20px;border:1px solid #FFE8F0;margin-bottom:14px}
+.card-title{font-size:13px;font-weight:700;color:#C04070;margin-bottom:14px}
+
+.form-group{margin-bottom:14px}
+.form-label{font-size:11px;font-weight:700;color:#C04070;margin-bottom:5px;display:block}
+.form-input,.form-select{width:100%;padding:11px 14px;border:1.5px solid #FFD6E5;border-radius:12px;font-size:14px;outline:none}
+.form-input:focus,.form-select:focus{border-color:#E05585}
+
+.type-toggle{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.type-btn{padding:11px;border-radius:12px;border:1.5px solid #FFD6E5;background:#fff;cursor:pointer;font-size:14px;font-weight:700}
+.active-expense{background:#FFE8F0;border-color:#E05585;color:#E05585}
+.active-income{background:#E1F5EE;border-color:#1D9E75;color:#1D9E75}
+
+.btn{padding:10px 20px;border-radius:20px;border:none;font-size:13px;cursor:pointer;font-weight:700}
+.btn-primary{background:#E05585;color:#fff}
+
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px}
+.sum-card{background:#fff;border-radius:14px;padding:14px;border:1px solid #FFE8F0;text-align:center}
+.sum-lbl{font-size:11px;color:#D490AA;margin-bottom:4px}
+.sum-val{font-size:17px;font-weight:700}
+.income{color:#1D9E75}
+.expense{color:#E05585}
+
+.tx-list{display:flex;flex-direction:column;gap:6px}
+.tx-row{display:flex;align-items:center;gap:12px;background:#fff;border-radius:12px;padding:12px 14px;border:1px solid #FFE8F0}
+.tx-info{flex:1}
+.tx-name{font-size:13px;font-weight:600}
+.tx-meta{font-size:11px;color:#D490AA;margin-top:2px}
+.tx-amt{font-size:15px;font-weight:700}
+.tx-amt.income{color:#1D9E75}
+.tx-amt.expense{color:#E05585}
+
+.empty{text-align:center;padding:36px 16px;color:#D490AA}
+
+@media(max-width:700px){
+  .sidebar{display:none}
+  .main-content{margin-left:0;padding:14px}
+  .banner-main{font-size:26px}
+}
+
+.auth-screen{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;background:#FFF0F5}
+.auth-logo{font-size:48px;font-weight:800;color:#E05585;letter-spacing:-2px;margin-bottom:8px}
+.auth-logo span{color:#FFB3CC;font-weight:400}
+.auth-sub{font-size:14px;color:#D490AA;margin-bottom:36px}
+.auth-card{background:#fff;border-radius:24px;padding:28px;width:100%;max-width:380px;border:1px solid #FFE8F0}
+.auth-title{font-size:18px;font-weight:700;color:#3D1525;margin-bottom:18px}
+.auth-btn{width:100%;padding:13px;border-radius:14px;border:none;background:#E05585;color:#fff;font-size:15px;font-weight:700;cursor:pointer;margin-top:8px}
+.auth-btn.secondary{background:#fff;color:#E05585;border:1px solid #FFD6E5}
+
+.budget-list,.loan-list{margin-top:18px}
+.budget-item{background:#fff;border-radius:12px;padding:14px 16px;border:1px solid #FFE8F0;margin-top:10px}
+.budget-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:13px}
+.bar-bg{height:8px;background:#FFE8F0;border-radius:20px;overflow:hidden}
+.bar-fill{height:100%;background:#E05585;border-radius:20px}
+.bar-fill.green{background:#1D9E75}
+.loan-card{background:#FFF8FB;border:1px solid #FFE8F0;border-radius:16px;padding:18px;margin-top:12px;line-height:1.8}
+.chart-box{background:#fff;border:1px solid #FFE8F0;border-radius:16px;padding:20px;margin-bottom:20px;max-width:520px}
+.form-input + .form-input,.form-input + .form-select,.form-select + .btn,.form-input + .btn{margin-top:10px}
+
+.hint{font-size:12px;color:#D490AA;margin-top:8px;line-height:1.6}
