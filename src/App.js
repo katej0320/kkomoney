@@ -15,11 +15,21 @@ import { Doughnut, Bar } from "react-chartjs-2";
 ChartJS.register(ArcElement, BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
 const CATS_EXP = ["식비","카페","교통","쇼핑","의료","문화/여가","구독","통신","저축","대출상환","기타"];
-const CATS_INC = ["월급","용돈","부업","이자","환급","기타수입"];
+const CATS_INC = ["이월","월급","용돈","부업","이자","환급","기타수입"];
 
 function won(n) {
   return Math.round(Number(n || 0)).toLocaleString("ko-KR") + "원";
 }
+
+function comma(n) {
+  return String(n || "").replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
+function uncomma(n) {
+  return Number(String(n || "0").replaceAll(",", ""));
+}
+
+const DEFAULT_MONEY_TYPES = ["계좌", "카드", "저축", "투자"];
 
 function guessCategory(text, type) {
   const t = String(text || "");
@@ -66,12 +76,21 @@ export default function App() {
   const [password, setPassword] = useState("");
 
   const [tab, setTab] = useState("home");
+  const [chartYear, setChartYear] = useState(new Date().getFullYear());
+  const [chartMonth, setChartMonth] = useState(new Date().getMonth());
   const [txs, setTxs] = useState([]);
 
   const [type, setType] = useState("expense");
   const [amount, setAmount] = useState("");
   const [name, setName] = useState("");
   const [category, setCategory] = useState("식비");
+  const [moneyType, setMoneyType] = useState("계좌");
+  const [transferTo, setTransferTo] = useState("카드");
+  const [moneyTypes, setMoneyTypes] = useState(() => {
+    const saved = localStorage.getItem("moneyTypes");
+    return saved ? JSON.parse(saved) : DEFAULT_MONEY_TYPES;
+  });
+  const [newMoneyType, setNewMoneyType] = useState("");
   const [repeat, setRepeat] = useState("none");
 
   const [budgets, setBudgets] = useState([]);
@@ -88,6 +107,7 @@ export default function App() {
   const [loanPrincipal, setLoanPrincipal] = useState("");
   const [loanRate, setLoanRate] = useState("");
   const [loanTerm, setLoanTerm] = useState("");
+  const [loanStartDate, setLoanStartDate] = useState(new Date().toISOString().slice(0, 10));
   const [loanType, setLoanType] = useState("equal_payment");
 
   useEffect(() => {
@@ -121,8 +141,51 @@ export default function App() {
     setUser(null);
   };
 
-  const income = txs.filter(t => t.type === "income").reduce((s,t) => s + Number(t.amount), 0);
-  const expense = txs.filter(t => t.type === "expense").reduce((s,t) => s + Number(t.amount), 0);
+  const realTxs = txs.filter(t => t.type !== "transfer");
+
+  const income = realTxs.filter(t => t.type === "income").reduce((s,t) => s + Number(t.amount), 0);
+  const expense = realTxs.filter(t => t.type === "expense").reduce((s,t) => s + Number(t.amount), 0);
+
+  const typeSummary = moneyTypes.map(mt => ({
+    type: mt,
+    income: txs.filter(t => t.type === "income" && t.moneyType === mt).reduce((s,t) => s + Number(t.amount), 0),
+    expense: txs.filter(t => t.type === "expense" && t.moneyType === mt).reduce((s,t) => s + Number(t.amount), 0),
+    transferIn: txs.filter(t => t.type === "transfer" && t.transferTo === mt).reduce((s,t) => s + Number(t.amount), 0),
+    transferOut: txs.filter(t => t.type === "transfer" && t.moneyType === mt).reduce((s,t) => s + Number(t.amount), 0),
+  }));
+
+  const moveChartMonth = (diff) => {
+    const d = new Date(chartYear, chartMonth + diff, 1);
+    setChartYear(d.getFullYear());
+    setChartMonth(d.getMonth());
+  };
+
+  const chartMonthTxs = realTxs.filter(t => {
+    const d = new Date(t.date);
+    return d.getFullYear() === chartYear && d.getMonth() === chartMonth;
+  });
+
+  const chartMonthIncome = chartMonthTxs
+    .filter(t => t.type === "income")
+    .reduce((s,t) => s + Number(t.amount), 0);
+
+  const chartMonthExpense = chartMonthTxs
+    .filter(t => t.type === "expense")
+    .reduce((s,t) => s + Number(t.amount), 0);
+
+  const chartIncomeMap = CATS_INC.map(cat => ({
+    cat,
+    amount: chartMonthTxs
+      .filter(t => t.type === "income" && t.category === cat)
+      .reduce((s,t) => s + Number(t.amount), 0),
+  })).filter(x => x.amount > 0);
+
+  const chartExpenseMap = CATS_EXP.map(cat => ({
+    cat,
+    amount: chartMonthTxs
+      .filter(t => t.type === "expense" && t.category === cat)
+      .reduce((s,t) => s + Number(t.amount), 0),
+  })).filter(x => x.amount > 0);
 
   const createRepeatedTxs = (baseTx) => {
     if (baseTx.repeat === "none") return [baseTx];
@@ -160,7 +223,7 @@ export default function App() {
     const baseTx = {
       id: Date.now(),
       type,
-      amount: Number(amount),
+      amount: uncomma(amount),
       name: name || category,
       category,
       repeat,
@@ -173,6 +236,8 @@ export default function App() {
     setAmount("");
     setName("");
     setRepeat("none");
+    setMoneyType("계좌");
+    setTransferTo("카드");
 
     if (repeat === "monthly") alert("매월 반복 내역 12개월치가 추가됐어요.");
     if (repeat === "weekly") alert("매주 반복 내역 8주치가 추가됐어요.");
@@ -221,6 +286,8 @@ export default function App() {
         amount: finalAmount,
         name: String(rawName),
         category: guessCategory(rawName, txType),
+        moneyType: "계좌",
+        transferTo: "",
         repeat: "none",
         date: normalizeDate(row[dateKey]),
       };
@@ -271,6 +338,7 @@ export default function App() {
       principal: Number(loanPrincipal),
       rate: Number(loanRate),
       term: Number(loanTerm),
+      startDate: loanStartDate,
       type: loanType,
     }]);
 
@@ -278,6 +346,7 @@ export default function App() {
     setLoanPrincipal("");
     setLoanRate("");
     setLoanTerm("");
+    setLoanStartDate(new Date().toISOString().slice(0, 10));
   };
 
   const calcMonthlyPayment = (loan) => {
@@ -291,9 +360,41 @@ export default function App() {
     return P * r * Math.pow(1 + r, n) / (Math.pow(1 + r, n) - 1);
   };
 
+  const getLoanPaidMonths = (loan) => {
+    if (!loan.startDate) return 0;
+    const start = new Date(loan.startDate);
+    const now = new Date();
+    const diff = (now.getFullYear() - start.getFullYear()) * 12 + (now.getMonth() - start.getMonth());
+    return Math.max(0, Math.min(Number(loan.term), diff));
+  };
+
+  const getLoanSummary = (loan) => {
+    const paidMonths = getLoanPaidMonths(loan);
+    const totalMonths = Number(loan.term);
+    const remainingMonths = Math.max(0, totalMonths - paidMonths);
+    const monthlyPayment = calcMonthlyPayment(loan);
+    const paidAmount = Math.min(Number(loan.principal), monthlyPayment * paidMonths);
+    const remainingAmount = Math.max(0, Number(loan.principal) - paidAmount);
+    const progress = totalMonths > 0 ? Math.min(100, Math.round((paidMonths / totalMonths) * 100)) : 0;
+    const yearsLeft = Math.floor(remainingMonths / 12);
+    const monthsLeft = remainingMonths % 12;
+
+    return {
+      paidMonths,
+      totalMonths,
+      remainingMonths,
+      monthlyPayment,
+      paidAmount,
+      remainingAmount,
+      progress,
+      yearsLeft,
+      monthsLeft,
+    };
+  };
+
   const catExpenseMap = CATS_EXP.map(cat => ({
     cat,
-    amount: txs
+    amount: realTxs
       .filter(t => t.type === "expense" && t.category === cat)
       .reduce((s,t) => s + Number(t.amount), 0),
   })).filter(x => x.amount > 0);
@@ -339,6 +440,7 @@ export default function App() {
           ["budget", "예산"],
           ["loan", "대출"],
           ["chart", "분석"],
+          ["settings", "설정"],
         ].map(([key, label]) => (
           <button key={key} className={`nav-btn ${tab === key ? "active" : ""}`} onClick={() => setTab(key)}>
             {label}
@@ -357,6 +459,7 @@ export default function App() {
               <div className="banner-row">
                 <div className="banner-mini">수입<span>{won(income)}</span></div>
                 <div className="banner-mini">지출<span>{won(expense)}</span></div>
+                <div className="banner-mini">이체<span>합계 제외</span></div>
               </div>
             </section>
 
@@ -374,7 +477,7 @@ export default function App() {
 
               <div className="form-group">
                 <label className="form-label">금액</label>
-                <input className="form-input" type="number" value={amount} onChange={e => setAmount(e.target.value)} />
+                <input className="form-input" type="text" value={amount} onChange={e => setAmount(comma(e.target.value))} />
               </div>
 
               <div className="form-group">
@@ -386,8 +489,26 @@ export default function App() {
                 <label className="form-label">카테고리</label>
                 <select className="form-select" value={category} onChange={e => setCategory(e.target.value)}>
                   {cats.map(c => <option key={c}>{c}</option>)}
+                  <option value="이체">이체</option>
                 </select>
               </div>
+
+              <div className="form-group">
+                <label className="form-label">출입금 유형</label>
+                <select className="form-select" value={moneyType} onChange={e => setMoneyType(e.target.value)}>
+                  {moneyTypes.map(mt => <option key={mt}>{mt}</option>)}
+                </select>
+              </div>
+
+              {category === "이체" && (
+                <div className="form-group">
+                  <label className="form-label">이체 도착 유형</label>
+                  <select className="form-select" value={transferTo} onChange={e => setTransferTo(e.target.value)}>
+                    {moneyTypes.map(mt => <option key={mt}>{mt}</option>)}
+                  </select>
+                  <div className="hint">계좌/카드/저축/투자 간 이동은 수입·지출 합계에 포함되지 않아요.</div>
+                </div>
+              )}
 
               <div className="form-group">
                 <label className="form-label">반복</label>
@@ -399,6 +520,20 @@ export default function App() {
               </div>
 
               <button className="btn btn-primary" onClick={saveTx}>저장</button>
+            </section>
+
+            <section className="card">
+              <div className="card-title">유형별 출입금 요약</div>
+              <div className="grid4">
+                {typeSummary.map(row => (
+                  <div className="sum-card" key={row.type}>
+                    <div className="sum-lbl">{row.type}</div>
+                    <div className="sum-val income">+{won(row.income + row.transferIn)}</div>
+                    <div className="sum-val expense">-{won(row.expense + row.transferOut)}</div>
+                  </div>
+                ))}
+              </div>
+              <div className="hint">이체는 유형별 이동에는 표시되지만 전체 수입/지출에는 계산되지 않아요.</div>
             </section>
 
             <section className="card">
@@ -427,11 +562,12 @@ export default function App() {
                   <div className="tx-info">
                     <div className="tx-name">{t.name}</div>
                     <div className="tx-meta">
-                      {t.date} · {t.category}
+                      {t.date} · {t.category} · {t.moneyType || "계좌"}
+                      {t.type === "transfer" ? ` → ${t.transferTo}` : ""}
                       {t.repeat !== "none" ? ` · ${t.repeat === "monthly" ? "매월 반복" : "매주 반복"}` : ""}
                     </div>
                   </div>
-                  <div className={`tx-amt ${t.type}`}>{t.type === "income" ? "+" : "-"}{won(t.amount)}</div>
+                  <div className={`tx-amt ${t.type}`}>{t.type === "transfer" ? "이체 " : t.type === "income" ? "+" : "-"}{won(t.amount)}</div>
                 </div>
               ))}
             </div>
@@ -499,6 +635,9 @@ export default function App() {
             <input className="form-input" placeholder="연이율 %" type="number" value={loanRate} onChange={e => setLoanRate(e.target.value)} />
             <input className="form-input" placeholder="기간 개월" type="number" value={loanTerm} onChange={e => setLoanTerm(e.target.value)} />
 
+            <label className="form-label loan-date-label">대출 시작일</label>
+            <input className="form-input" type="date" value={loanStartDate} onChange={e => setLoanStartDate(e.target.value)} />
+
             <select className="form-select" value={loanType} onChange={e => setLoanType(e.target.value)}>
               <option value="equal_payment">원리금균등</option>
               <option value="equal_principal">원금균등</option>
@@ -507,50 +646,186 @@ export default function App() {
             <button className="btn btn-primary" onClick={saveLoan}>대출 추가</button>
 
             <div className="loan-list">
-              {loans.map(l => (
-                <div className="loan-card" key={l.id}>
-                  <h3>{l.name}</h3>
-                  <p>원금: {won(l.principal)}</p>
-                  <p>연이율: {l.rate}%</p>
-                  <p>기간: {l.term}개월</p>
-                  <p>방식: {l.type === "equal_payment" ? "원리금균등" : "원금균등"}</p>
-                  <p><b>예상 월 상환액: {won(calcMonthlyPayment(l))}</b></p>
+              {loans.map(l => {
+                const summary = getLoanSummary(l);
+
+                return (
+                  <div className="loan-card" key={l.id}>
+                    <div className="loan-head">
+                      <div>
+                        <h3>{l.name}</h3>
+                        <p>{l.type === "equal_payment" ? "원리금균등" : "원금균등"} · 연 {l.rate}% · {l.term}개월</p>
+                      </div>
+                      <div className="loan-progress-num">{summary.progress}%</div>
+                    </div>
+
+                    <div className="loan-progress-bg">
+                      <div className="loan-progress-fill" style={{ width: summary.progress + "%" }} />
+                    </div>
+
+                    <div className="loan-info-grid">
+                      <div>
+                        <span>대출 원금</span>
+                        <b>{won(l.principal)}</b>
+                      </div>
+                      <div>
+                        <span>누적 상환</span>
+                        <b>{won(summary.paidAmount)}</b>
+                      </div>
+                      <div>
+                        <span>남은 잔금</span>
+                        <b>{won(summary.remainingAmount)}</b>
+                      </div>
+                      <div>
+                        <span>월 상환액</span>
+                        <b>{won(summary.monthlyPayment)}</b>
+                      </div>
+                    </div>
+
+                    <div className="loan-detail">
+                      <div>총 {summary.totalMonths}개월 중 <b>{summary.paidMonths}개월치</b> 갚았어요.</div>
+                      <div>
+                        앞으로 <b>{summary.remainingMonths}개월</b>
+                        {summary.yearsLeft > 0 && <> · 약 <b>{summary.yearsLeft}년 {summary.monthsLeft}개월</b></>}
+                        남았어요.
+                      </div>
+                      <div>시작일: {l.startDate || "미입력"}</div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+        )}
+
+        {tab === "settings" && (
+          <section className="card">
+            <div className="card-title">설정 · 출입금 유형 편집</div>
+
+            <div className="form-group">
+              <label className="form-label">새 유형 추가</label>
+              <div className="settings-row">
+                <input
+                  className="form-input"
+                  value={newMoneyType}
+                  onChange={e => setNewMoneyType(e.target.value)}
+                  placeholder="예: 비상금, CMA, 현금"
+                />
+                <button
+                  className="btn btn-primary"
+                  onClick={() => {
+                    const v = newMoneyType.trim();
+                    if (!v) return alert("추가할 유형명을 입력해주세요");
+                    if (moneyTypes.includes(v)) return alert("이미 있는 유형이에요");
+                    const next = [...moneyTypes, v];
+                    setMoneyTypes(next);
+                    localStorage.setItem("moneyTypes", JSON.stringify(next));
+                    setNewMoneyType("");
+                  }}
+                >
+                  추가
+                </button>
+              </div>
+            </div>
+
+            <div className="type-edit-list">
+              {moneyTypes.map(mt => (
+                <div className="type-edit-item" key={mt}>
+                  <span>{mt}</span>
+                  <button
+                    className="small-delete"
+                    onClick={() => {
+                      if (moneyTypes.length <= 1) return alert("유형은 최소 1개 필요해요");
+                      const next = moneyTypes.filter(x => x !== mt);
+                      setMoneyTypes(next);
+                      localStorage.setItem("moneyTypes", JSON.stringify(next));
+                      if (moneyType === mt) setMoneyType(next[0]);
+                      if (transferTo === mt) setTransferTo(next[0]);
+                    }}
+                  >
+                    삭제
+                  </button>
                 </div>
               ))}
             </div>
+
+            <div className="hint">계좌, 카드, 저축, 투자 외에 비상금/CMA/현금 같은 유형을 추가할 수 있어요.</div>
           </section>
         )}
 
         {tab === "chart" && (
           <section className="card">
-            <div className="card-title">분석 차트</div>
+            <div className="chart-month-head">
+              <button className="month-arrow" onClick={() => moveChartMonth(-1)}>‹</button>
+              <div>
+                <div className="card-title">분석 차트</div>
+                <div className="chart-month-title">{chartYear}년 {chartMonth + 1}월</div>
+              </div>
+              <button className="month-arrow" onClick={() => moveChartMonth(1)}>›</button>
+            </div>
 
-            <div className="chart-box">
+            <div className="grid3">
+              <div className="sum-card">
+                <div className="sum-lbl">월 수입</div>
+                <div className="sum-val income">{won(chartMonthIncome)}</div>
+              </div>
+              <div className="sum-card">
+                <div className="sum-lbl">월 지출</div>
+                <div className="sum-val expense">{won(chartMonthExpense)}</div>
+              </div>
+              <div className="sum-card">
+                <div className="sum-lbl">월 잔액</div>
+                <div className="sum-val">{won(chartMonthIncome - chartMonthExpense)}</div>
+              </div>
+            </div>
+
+            <div className="chart-grid">
+              <div className="chart-box">
+                <div className="card-title">수입 카테고리</div>
+                {chartIncomeMap.length === 0 ? (
+                  <div className="empty">이 달의 수입 데이터가 없어요</div>
+                ) : (
+                  <Doughnut
+                    data={{
+                      labels: chartIncomeMap.map(x => x.cat),
+                      datasets: [{
+                        label: "수입",
+                        data: chartIncomeMap.map(x => x.amount),
+                      }],
+                    }}
+                  />
+                )}
+              </div>
+
+              <div className="chart-box">
+                <div className="card-title">지출 카테고리</div>
+                {chartExpenseMap.length === 0 ? (
+                  <div className="empty">이 달의 지출 데이터가 없어요</div>
+                ) : (
+                  <Doughnut
+                    data={{
+                      labels: chartExpenseMap.map(x => x.cat),
+                      datasets: [{
+                        label: "지출",
+                        data: chartExpenseMap.map(x => x.amount),
+                      }],
+                    }}
+                  />
+                )}
+              </div>
+            </div>
+
+            <div className="chart-box wide">
+              <div className="card-title">수입 / 지출 비교</div>
               <Bar
                 data={{
                   labels: ["수입", "지출", "잔액"],
                   datasets: [{
-                    label: "이번 달 요약",
-                    data: [income, expense, income - expense],
+                    label: `${chartYear}년 ${chartMonth + 1}월`,
+                    data: [chartMonthIncome, chartMonthExpense, chartMonthIncome - chartMonthExpense],
                   }],
                 }}
               />
-            </div>
-
-            <div className="chart-box">
-              {catExpenseMap.length === 0 ? (
-                <div className="empty">지출 데이터가 없어요</div>
-              ) : (
-                <Doughnut
-                  data={{
-                    labels: catExpenseMap.map(x => x.cat),
-                    datasets: [{
-                      label: "카테고리별 지출",
-                      data: catExpenseMap.map(x => x.amount),
-                    }],
-                  }}
-                />
-              )}
             </div>
           </section>
         )}

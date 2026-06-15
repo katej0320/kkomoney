@@ -79,3 +79,200 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .form-input + .form-input,.form-input + .form-select,.form-select + .btn,.form-input + .btn{margin-top:10px}
 
 .hint{font-size:12px;color:#D490AA;margin-top:8px;line-height:1.6}
+
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+.tx-amt.transfer{color:#6B52CC}
+@media(max-width:700px){
+  .grid4{grid-template-columns:1fr 1fr}
+}
+
+.form-input,.form-select{
+  display:block;
+  width:100%;
+  max-width:100%;
+  height:40px;
+  box-sizing:border-box;
+}
+
+.card{
+  overflow:hidden;
+}
+
+.form-group{
+  width:100%;
+  max-width:100%;
+}
+
+.settings-row{
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:10px;
+  align-items:center;
+}
+
+.type-edit-list{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  margin-top:14px;
+}
+
+.type-edit-item{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:12px 14px;
+  border:1px solid #FFE8F0;
+  border-radius:12px;
+  background:#FFF8FB;
+  font-size:14px;
+  font-weight:700;
+}
+
+.small-delete{
+  border:none;
+  background:#FFE8F0;
+  color:#E05585;
+  border-radius:999px;
+  padding:6px 12px;
+  cursor:pointer;
+  font-weight:700;
+}
+
+@media(max-width:700px){
+  .settings-row{
+    grid-template-columns:1fr;
+  }
+}
+
+.chart-month-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  margin-bottom:18px;
+}
+
+.chart-month-title{
+  font-size:22px;
+  font-weight:800;
+  color:#E05585;
+  margin-top:4px;
+}
+
+.month-arrow{
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  border:1px solid #FFD6E5;
+  background:#fff;
+  color:#E05585;
+  font-size:28px;
+  font-weight:800;
+  cursor:pointer;
+}
+
+.chart-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:16px;
+}
+
+.chart-box.wide{
+  max-width:100%;
+}
+
+@media(max-width:700px){
+  .chart-grid{
+    grid-template-columns:1fr;
+  }
+}
+
+.loan-date-label{
+  margin-top:10px;
+}
+
+.loan-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:12px;
+  margin-bottom:12px;
+}
+
+.loan-head h3{
+  margin:0 0 4px 0;
+  color:#3D1525;
+}
+
+.loan-head p{
+  margin:0;
+  font-size:12px;
+  color:#D490AA;
+}
+
+.loan-progress-num{
+  font-size:22px;
+  font-weight:900;
+  color:#E05585;
+}
+
+.loan-progress-bg{
+  height:12px;
+  background:#FFE8F0;
+  border-radius:999px;
+  overflow:hidden;
+  margin:12px 0 14px;
+}
+
+.loan-progress-fill{
+  height:100%;
+  background:#E05585;
+  border-radius:999px;
+  transition:width .3s ease;
+}
+
+.loan-info-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:10px;
+  margin-bottom:14px;
+}
+
+.loan-info-grid div{
+  background:#fff;
+  border:1px solid #FFE8F0;
+  border-radius:12px;
+  padding:10px;
+}
+
+.loan-info-grid span{
+  display:block;
+  font-size:11px;
+  color:#D490AA;
+  margin-bottom:4px;
+}
+
+.loan-info-grid b{
+  font-size:14px;
+  color:#3D1525;
+}
+
+.loan-detail{
+  background:#FFF0F5;
+  border-radius:12px;
+  padding:12px;
+  font-size:13px;
+  line-height:1.8;
+  color:#3D1525;
+}
+
+.loan-detail b{
+  color:#E05585;
+}
+
+@media(max-width:700px){
+  .loan-info-grid{
+    grid-template-columns:1fr 1fr;
+  }
+}
