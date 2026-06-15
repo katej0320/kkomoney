@@ -81,7 +81,6 @@ export default function App() {
   const [chartMonth, setChartMonth] = useState(new Date().getMonth());
   const [txs, setTxs] = useState([]);
 
-  const [editingTxId, setEditingTxId] = useState(null);
   const [type, setType] = useState("expense");
   const [amount, setAmount] = useState("");
   const [name, setName] = useState("");
@@ -288,7 +287,7 @@ export default function App() {
     const finalType = moneyType !== transferTo && category === "이체" ? "transfer" : type;
 
     const baseTx = {
-      id: editingTxId || Date.now(),
+      id: Date.now(),
       type: finalType,
       amount: uncomma(amount),
       name: name || category,
@@ -299,38 +298,8 @@ export default function App() {
       date: new Date().toISOString().slice(0, 10),
     };
 
-    if (editingTxId) {
-      const { data, error } = await supabase
-        .from("transactions")
-        .update({
-          type: baseTx.type === "transfer" ? "expense" : baseTx.type,
-          amount: baseTx.amount,
-          date: baseTx.date,
-          name: baseTx.name,
-          category: baseTx.category,
-          memo: baseTx.type === "transfer" ? `이체: ${baseTx.moneyType} → ${baseTx.transferTo}` : "",
-          account: baseTx.moneyType || "계좌",
-          repeat: baseTx.repeat || "none",
-        })
-        .eq("id", editingTxId)
-        .eq("user_id", user.id)
-        .select()
-        .single();
-
-      if (error) return alert(error.message);
-
-      const updatedTx = {
-        ...baseTx,
-        id: data.id,
-      };
-
-      setTxs(txs.map(t => t.id === editingTxId ? updatedTx : t));
-      showPopup("입출금 내역이 수정됐어요.", "수정 완료", "✏️");
-      cancelTxEdit();
-      return;
-    }
-
     const newTxs = createRepeatedTxs(baseTx);
+
     const savedTxs = [];
 
     for (const tx of newTxs) {
@@ -367,50 +336,9 @@ export default function App() {
     setRepeat("none");
     setMoneyType("계좌");
     setTransferTo("카드");
-    setEditingTxId(null);
 
     if (repeat === "monthly") showPopup("매월 반복 내역 12개월치가 추가됐어요.", "반복 등록 완료", "🔁");
-    else if (repeat === "weekly") showPopup("매주 반복 내역 8주치가 추가됐어요.", "반복 등록 완료", "🔁");
-    else showPopup("입출금 내역이 추가됐어요.", "기록 완료", "💸");
-  };
-
-  const editTx = (tx) => {
-    setEditingTxId(tx.id);
-    setType(tx.type === "transfer" ? "expense" : tx.type);
-    setAmount(comma(tx.amount));
-    setName(tx.name || "");
-    setCategory(tx.type === "transfer" ? "이체" : tx.category || "식비");
-    setMoneyType(tx.moneyType || "계좌");
-    setTransferTo(tx.transferTo || "카드");
-    setRepeat(tx.repeat || "none");
-    setTab("home");
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
-  const cancelTxEdit = () => {
-    setEditingTxId(null);
-    setType("expense");
-    setAmount("");
-    setName("");
-    setCategory("식비");
-    setMoneyType("계좌");
-    setTransferTo("카드");
-    setRepeat("none");
-  };
-
-  const deleteTx = async (txId) => {
-    if (!window.confirm("이 입출금 내역을 삭제할까요?")) return;
-
-    const { error } = await supabase
-      .from("transactions")
-      .delete()
-      .eq("id", txId)
-      .eq("user_id", user.id);
-
-    if (error) return alert(error.message);
-
-    setTxs(txs.filter(t => t.id !== txId));
-    showPopup("입출금 내역이 삭제됐어요.", "삭제 완료", "🗑️");
+    if (repeat === "weekly") showPopup("매주 반복 내역 8주치가 추가됐어요.", "반복 등록 완료", "🔁");
   };
 
   const handleExcelUpload = async (event) => {
@@ -846,7 +774,7 @@ export default function App() {
             </section>
 
             <section className="card">
-              <div className="card-title">{editingTxId ? "입출금 수정" : "빠른 입력"}</div>
+              <div className="card-title">빠른 입력</div>
 
               <div className="type-toggle">
                 <button className={`type-btn ${type === "expense" ? "active-expense" : ""}`} onClick={() => {setType("expense"); setCategory("식비");}}>
@@ -901,16 +829,7 @@ export default function App() {
                 </select>
               </div>
 
-              <div className="tx-button-row">
-                <button className="btn btn-primary" onClick={saveTx}>
-                  {editingTxId ? "수정 저장" : "저장"}
-                </button>
-                {editingTxId && (
-                  <button className="btn btn-secondary" onClick={cancelTxEdit}>
-                    취소
-                  </button>
-                )}
-              </div>
+              <button className="btn btn-primary" onClick={saveTx}>저장</button>
             </section>
 
             <section className="card">
@@ -959,10 +878,6 @@ export default function App() {
                     </div>
                   </div>
                   <div className={`tx-amt ${t.type}`}>{t.type === "transfer" ? "이체 " : t.type === "income" ? "+" : "-"}{won(t.amount)}</div>
-                  <div className="tx-actions">
-                    <button onClick={() => editTx(t)}>수정</button>
-                    <button onClick={() => deleteTx(t.id)}>삭제</button>
-                  </div>
                 </div>
               ))}
             </div>

@@ -74,14 +74,12 @@ export default function App() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [popup, setPopup] = useState(null);
 
   const [tab, setTab] = useState("home");
   const [chartYear, setChartYear] = useState(new Date().getFullYear());
   const [chartMonth, setChartMonth] = useState(new Date().getMonth());
   const [txs, setTxs] = useState([]);
 
-  const [editingTxId, setEditingTxId] = useState(null);
   const [type, setType] = useState("expense");
   const [amount, setAmount] = useState("");
   const [name, setName] = useState("");
@@ -115,10 +113,8 @@ export default function App() {
   const [loanType, setLoanType] = useState("equal_payment");
 
   useEffect(() => {
-    supabase.auth.getSession().then(async ({ data }) => {
-      const currentUser = data.session?.user ?? null;
-      setUser(currentUser);
-      if (currentUser) await loadUserData(currentUser);
+    supabase.auth.getSession().then(({ data }) => {
+      setUser(data.session?.user ?? null);
       setLoading(false);
     });
 
@@ -131,79 +127,20 @@ export default function App() {
 
   const login = async () => {
     if (!email || !password) return alert("이메일과 비밀번호를 입력해주세요");
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) return alert(error.message);
-    if (data.user) await loadUserData(data.user);
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) alert(error.message);
   };
 
   const signup = async () => {
     if (!email || !password) return alert("이메일과 비밀번호를 입력해주세요");
     const { error } = await supabase.auth.signUp({ email, password });
     if (error) return alert(error.message);
-    showPopup("회원가입 완료! 이메일 확인이 필요할 수 있어요.", "회원가입 완료", "💌");
-  };
-
-  const showPopup = (message, title = "완료", emoji = "💗") => {
-    setPopup({ title, message, emoji });
-  };
-
-  const closePopup = () => {
-    setPopup(null);
+    alert("회원가입 완료! 이메일 확인이 필요할 수 있어요.");
   };
 
   const logout = async () => {
     await supabase.auth.signOut();
     setUser(null);
-  };
-
-  const loadUserData = async (currentUser) => {
-    if (!currentUser) return;
-
-    const [{ data: txData }, { data: budgetData }, { data: savingData }, { data: loanData }] =
-      await Promise.all([
-        supabase.from("transactions").select("*").eq("user_id", currentUser.id).order("date", { ascending: false }),
-        supabase.from("budgets").select("*").eq("user_id", currentUser.id),
-        supabase.from("savings").select("*").eq("user_id", currentUser.id),
-        supabase.from("loans").select("*").eq("user_id", currentUser.id),
-      ]);
-
-    setTxs((txData || []).map(t => ({
-      id: t.id,
-      type: t.type,
-      amount: Number(t.amount),
-      name: t.name,
-      category: t.category,
-      date: t.date,
-      repeat: t.repeat || "none",
-      moneyType: t.account || "계좌",
-      transferTo: "",
-      memo: t.memo || "",
-    })));
-
-    setBudgets((budgetData || []).map(b => ({
-      id: b.id,
-      category: b.category,
-      amount: Number(b.amount),
-    })));
-
-    setSavings((savingData || []).map(sv => ({
-      id: sv.id,
-      name: sv.name,
-      target: Number(sv.target),
-      current: Number(sv.current || 0),
-    })));
-
-    setLoans((loanData || []).map(l => ({
-      id: l.id,
-      name: l.name,
-      bank: l.bank || "",
-      principal: Number(l.principal),
-      rate: Number(l.rate),
-      term: Number(l.term),
-      startDate: l.start,
-      type: l.type,
-      memo: l.memo || "",
-    })));
   };
 
   const realTxs = txs.filter(t => t.type !== "transfer");
@@ -282,13 +219,13 @@ export default function App() {
     return list;
   };
 
-  const saveTx = async () => {
+  const saveTx = () => {
     if (!amount) return alert("금액을 입력해주세요");
 
     const finalType = moneyType !== transferTo && category === "이체" ? "transfer" : type;
 
     const baseTx = {
-      id: editingTxId || Date.now(),
+      id: Date.now(),
       type: finalType,
       amount: uncomma(amount),
       name: name || category,
@@ -299,118 +236,17 @@ export default function App() {
       date: new Date().toISOString().slice(0, 10),
     };
 
-    if (editingTxId) {
-      const { data, error } = await supabase
-        .from("transactions")
-        .update({
-          type: baseTx.type === "transfer" ? "expense" : baseTx.type,
-          amount: baseTx.amount,
-          date: baseTx.date,
-          name: baseTx.name,
-          category: baseTx.category,
-          memo: baseTx.type === "transfer" ? `이체: ${baseTx.moneyType} → ${baseTx.transferTo}` : "",
-          account: baseTx.moneyType || "계좌",
-          repeat: baseTx.repeat || "none",
-        })
-        .eq("id", editingTxId)
-        .eq("user_id", user.id)
-        .select()
-        .single();
-
-      if (error) return alert(error.message);
-
-      const updatedTx = {
-        ...baseTx,
-        id: data.id,
-      };
-
-      setTxs(txs.map(t => t.id === editingTxId ? updatedTx : t));
-      showPopup("입출금 내역이 수정됐어요.", "수정 완료", "✏️");
-      cancelTxEdit();
-      return;
-    }
-
     const newTxs = createRepeatedTxs(baseTx);
-    const savedTxs = [];
 
-    for (const tx of newTxs) {
-      const { data, error } = await supabase
-        .from("transactions")
-        .insert({
-          user_id: user.id,
-          type: tx.type === "transfer" ? "expense" : tx.type,
-          amount: tx.amount,
-          date: tx.date,
-          name: tx.name,
-          category: tx.category,
-          memo: tx.type === "transfer" ? `이체: ${tx.moneyType} → ${tx.transferTo}` : "",
-          account: tx.moneyType || "계좌",
-          repeat: tx.repeat || "none",
-        })
-        .select()
-        .single();
-
-      if (error) {
-        alert(error.message);
-        return;
-      }
-
-      savedTxs.push({
-        ...tx,
-        id: data.id,
-      });
-    }
-
-    setTxs([...savedTxs, ...txs]);
+    setTxs([...newTxs, ...txs]);
     setAmount("");
     setName("");
     setRepeat("none");
     setMoneyType("계좌");
     setTransferTo("카드");
-    setEditingTxId(null);
 
-    if (repeat === "monthly") showPopup("매월 반복 내역 12개월치가 추가됐어요.", "반복 등록 완료", "🔁");
-    else if (repeat === "weekly") showPopup("매주 반복 내역 8주치가 추가됐어요.", "반복 등록 완료", "🔁");
-    else showPopup("입출금 내역이 추가됐어요.", "기록 완료", "💸");
-  };
-
-  const editTx = (tx) => {
-    setEditingTxId(tx.id);
-    setType(tx.type === "transfer" ? "expense" : tx.type);
-    setAmount(comma(tx.amount));
-    setName(tx.name || "");
-    setCategory(tx.type === "transfer" ? "이체" : tx.category || "식비");
-    setMoneyType(tx.moneyType || "계좌");
-    setTransferTo(tx.transferTo || "카드");
-    setRepeat(tx.repeat || "none");
-    setTab("home");
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
-  const cancelTxEdit = () => {
-    setEditingTxId(null);
-    setType("expense");
-    setAmount("");
-    setName("");
-    setCategory("식비");
-    setMoneyType("계좌");
-    setTransferTo("카드");
-    setRepeat("none");
-  };
-
-  const deleteTx = async (txId) => {
-    if (!window.confirm("이 입출금 내역을 삭제할까요?")) return;
-
-    const { error } = await supabase
-      .from("transactions")
-      .delete()
-      .eq("id", txId)
-      .eq("user_id", user.id);
-
-    if (error) return alert(error.message);
-
-    setTxs(txs.filter(t => t.id !== txId));
-    showPopup("입출금 내역이 삭제됐어요.", "삭제 완료", "🗑️");
+    if (repeat === "monthly") alert("매월 반복 내역 12개월치가 추가됐어요.");
+    if (repeat === "weekly") alert("매주 반복 내역 8주치가 추가됐어요.");
   };
 
   const handleExcelUpload = async (event) => {
@@ -473,80 +309,33 @@ export default function App() {
     });
 
     setTxs([...filtered, ...txs]);
-    
+    alert(`${filtered.length}개 내역을 가져왔어요. 중복 ${imported.length - filtered.length}개는 제외했어요.`);
     event.target.value = "";
   };
 
-  const saveBudget = async () => {
+  const saveBudget = () => {
     if (!budgetAmount) return alert("예산 금액을 입력해주세요");
-
-    const { data, error } = await supabase
-      .from("budgets")
-      .upsert({
-        user_id: user.id,
-        category: budgetCat,
-        amount: Number(budgetAmount),
-      }, { onConflict: "user_id,category" })
-      .select()
-      .single();
-
-    if (error) return alert(error.message);
-
     const next = budgets.filter(b => b.category !== budgetCat);
-    setBudgets([...next, {
-      id: data.id,
-      category: data.category,
-      amount: Number(data.amount),
-    }]);
+    setBudgets([...next, { category: budgetCat, amount: Number(budgetAmount) }]);
     setBudgetAmount("");
   };
 
-  const saveSaving = async () => {
+  const saveSaving = () => {
     if (!savingName || !savingTarget) return alert("목표명과 목표 금액을 입력해주세요");
 
+    const savingData = {
+      id: editingSavingId || Date.now(),
+      name: savingName,
+      target: Number(savingTarget),
+      current: Number(savingCurrent || 0),
+    };
+
     if (editingSavingId) {
-      const { data, error } = await supabase
-        .from("savings")
-        .update({
-          name: savingName,
-          target: Number(savingTarget),
-          current: Number(savingCurrent || 0),
-        })
-        .eq("id", editingSavingId)
-        .eq("user_id", user.id)
-        .select()
-        .single();
-
-      if (error) return alert(error.message);
-
-      setSavings(savings.map(s => s.id === editingSavingId ? {
-        id: data.id,
-        name: data.name,
-        target: Number(data.target),
-        current: Number(data.current || 0),
-      } : s));
-      showPopup("저축 목표가 수정됐어요.", "수정 완료", "🐷");
+      setSavings(savings.map(s => s.id === editingSavingId ? savingData : s));
+      alert("저축 목표가 수정됐어요.");
     } else {
-      const { data, error } = await supabase
-        .from("savings")
-        .insert({
-          user_id: user.id,
-          name: savingName,
-          target: Number(savingTarget),
-          current: Number(savingCurrent || 0),
-        })
-        .select()
-        .single();
-
-      if (error) return alert(error.message);
-
-      setSavings([...savings, {
-        id: data.id,
-        name: data.name,
-        target: Number(data.target),
-        current: Number(data.current || 0),
-      }]);
-      showPopup("저축 목표가 추가됐어요.", "저축 목표 추가", "🐷");
+      setSavings([...savings, savingData]);
+      alert("저축 목표가 추가됐어요.");
     }
 
     setEditingSavingId(null);
@@ -570,17 +359,8 @@ export default function App() {
     setSavingCurrent("");
   };
 
-  const deleteSaving = async (savingId) => {
+  const deleteSaving = (savingId) => {
     if (!window.confirm("이 저축 목표를 삭제할까요?")) return;
-
-    const { error } = await supabase
-      .from("savings")
-      .delete()
-      .eq("id", savingId)
-      .eq("user_id", user.id);
-
-    if (error) return alert(error.message);
-
     setSavings(savings.filter(s => s.id !== savingId));
   };
 
@@ -590,63 +370,27 @@ export default function App() {
     ? Math.min(100, Math.round((totalSavingCurrent / totalSavingTarget) * 100))
     : 0;
 
-  const saveLoan = async () => {
+  const saveLoan = () => {
     if (!loanName || !loanPrincipal || !loanRate || !loanTerm) {
       return alert("대출 정보를 모두 입력해주세요");
     }
 
-    const payload = {
+    const loanData = {
+      id: editingLoanId || Date.now(),
       name: loanName,
       principal: Number(loanPrincipal),
       rate: Number(loanRate),
       term: Number(loanTerm),
-      start: loanStartDate,
+      startDate: loanStartDate,
       type: loanType,
     };
 
     if (editingLoanId) {
-      const { data, error } = await supabase
-        .from("loans")
-        .update(payload)
-        .eq("id", editingLoanId)
-        .eq("user_id", user.id)
-        .select()
-        .single();
-
-      if (error) return alert(error.message);
-
-      setLoans(loans.map(l => l.id === editingLoanId ? {
-        id: data.id,
-        name: data.name,
-        principal: Number(data.principal),
-        rate: Number(data.rate),
-        term: Number(data.term),
-        startDate: data.start,
-        type: data.type,
-      } : l));
-      showPopup("대출건이 수정됐어요.", "수정 완료", "🏦");
+      setLoans(loans.map(l => l.id === editingLoanId ? loanData : l));
+      alert("대출건이 수정됐어요.");
     } else {
-      const { data, error } = await supabase
-        .from("loans")
-        .insert({
-          user_id: user.id,
-          ...payload,
-        })
-        .select()
-        .single();
-
-      if (error) return alert(error.message);
-
-      setLoans([...loans, {
-        id: data.id,
-        name: data.name,
-        principal: Number(data.principal),
-        rate: Number(data.rate),
-        term: Number(data.term),
-        startDate: data.start,
-        type: data.type,
-      }]);
-      showPopup("대출건이 추가됐어요. 입출금 카테고리에 대출명이 자동으로 표시돼요.", "대출 추가 완료", "🏦");
+      setLoans([...loans, loanData]);
+      alert("대출건이 추가됐어요. 이제 입출금 입력 카테고리에 대출명이 자동으로 표시됩니다.");
     }
 
     setEditingLoanId(null);
@@ -679,17 +423,8 @@ export default function App() {
     setLoanType("equal_payment");
   };
 
-  const deleteLoan = async (loanId) => {
+  const deleteLoan = (loanId) => {
     if (!window.confirm("이 대출건을 삭제할까요?")) return;
-
-    const { error } = await supabase
-      .from("loans")
-      .delete()
-      .eq("id", loanId)
-      .eq("user_id", user.id);
-
-    if (error) return alert(error.message);
-
     setLoans(loans.filter(l => l.id !== loanId));
   };
 
@@ -799,18 +534,6 @@ export default function App() {
   }
 
   return (
-    <>
-    {popup && (
-      <div className="kko-popup-overlay">
-        <div className="kko-popup">
-          <div className="kko-popup-emoji">{popup.emoji}</div>
-          <div className="kko-popup-title">{popup.title}</div>
-          <div className="kko-popup-message">{popup.message}</div>
-          <button className="kko-popup-btn" onClick={closePopup}>확인</button>
-        </div>
-      </div>
-    )}
-
     <div className="desktop-wrap">
       <aside className="sidebar">
         <div className="logo">kko<span>money</span></div>
@@ -846,7 +569,7 @@ export default function App() {
             </section>
 
             <section className="card">
-              <div className="card-title">{editingTxId ? "입출금 수정" : "빠른 입력"}</div>
+              <div className="card-title">빠른 입력</div>
 
               <div className="type-toggle">
                 <button className={`type-btn ${type === "expense" ? "active-expense" : ""}`} onClick={() => {setType("expense"); setCategory("식비");}}>
@@ -901,16 +624,7 @@ export default function App() {
                 </select>
               </div>
 
-              <div className="tx-button-row">
-                <button className="btn btn-primary" onClick={saveTx}>
-                  {editingTxId ? "수정 저장" : "저장"}
-                </button>
-                {editingTxId && (
-                  <button className="btn btn-secondary" onClick={cancelTxEdit}>
-                    취소
-                  </button>
-                )}
-              </div>
+              <button className="btn btn-primary" onClick={saveTx}>저장</button>
             </section>
 
             <section className="card">
@@ -959,10 +673,6 @@ export default function App() {
                     </div>
                   </div>
                   <div className={`tx-amt ${t.type}`}>{t.type === "transfer" ? "이체 " : t.type === "income" ? "+" : "-"}{won(t.amount)}</div>
-                  <div className="tx-actions">
-                    <button onClick={() => editTx(t)}>수정</button>
-                    <button onClick={() => deleteTx(t.id)}>삭제</button>
-                  </div>
                 </div>
               ))}
             </div>
@@ -1335,6 +1045,5 @@ export default function App() {
         )}
       </main>
     </div>
-    </>
   );
 }
