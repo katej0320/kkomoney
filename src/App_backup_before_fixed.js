@@ -188,39 +188,6 @@ const I18N = {
     noExpenseData: "이 달의 지출 데이터가 없어요",
     incomeExpenseCompare: "수입 / 지출 비교",
 
-
-    transferHint: "계좌/카드/저축/투자 간 이동은 수입·지출 합계에 포함되지 않아요.",
-    repeatMonthly: "매월 반복",
-    repeatWeekly: "매주 반복",
-    txTransferPrefix: "이체",
-    savingNamePlaceholder: "목표명 예: 비상금, 여행 적금",
-    savingTargetPlaceholder: "목표 금액",
-    savingCurrentPlaceholder: "현재 모은 금액",
-    loanTypeEqualPayment: "원리금균등",
-    loanTypeEqualPrincipal: "원금균등",
-    annualRateShort: "연",
-    monthsUnit: "개월",
-    loanPaidSentence: "총 {total}개월 중 {paid}개월치 갚았어요.",
-    loanRemainingSentence: "앞으로 {months}개월 남았어요.",
-    loanRemainingYearSentence: "앞으로 {months}개월 · 약 {years}년 {leftMonths}개월 남았어요.",
-    notEntered: "미입력",
-    moneyTypeEditorTitle: "설정 · 출입금 유형 편집",
-    addTypeRequired: "추가할 유형명을 입력해주세요",
-    duplicateType: "이미 있는 유형이에요",
-    minTypeRequired: "유형은 최소 1개 필요해요",
-    moneyTypeHint: "계좌, 카드, 저축, 투자 외에 비상금/CMA/현금 같은 유형을 추가할 수 있어요.",
-    chartMonthTitle: "{year}년 {month}월",
-    chartDatasetMonth: "{year}년 {month}월",
-    excelNoData: "엑셀에서 데이터를 찾지 못했어요.",
-    emailPasswordRequired: "이메일과 비밀번호를 입력해주세요",
-    accountNameRequired: "계좌명을 입력해주세요",
-    cardRequired: "카드명과 결제일을 입력해주세요",
-    subRequired: "구독명과 금액을 입력해주세요",
-    amountRequired: "금액을 입력해주세요",
-    budgetRequired: "예산 금액을 입력해주세요",
-    savingRequired: "목표명과 목표 금액을 입력해주세요",
-    loanRequired: "대출 정보를 모두 입력해주세요",
-
     account: "계좌",
     card: "카드",
     savingsType: "저축",
@@ -381,39 +348,6 @@ const I18N = {
     noExpenseData: "No expense data this month",
     incomeExpenseCompare: "Income / Expense comparison",
 
-
-    transferHint: "Transfers between account/card/savings/investment are excluded from income and expense totals.",
-    repeatMonthly: "Monthly recurring",
-    repeatWeekly: "Weekly recurring",
-    txTransferPrefix: "Transfer",
-    savingNamePlaceholder: "Goal name e.g. emergency fund, trip",
-    savingTargetPlaceholder: "Target amount",
-    savingCurrentPlaceholder: "Current saved amount",
-    loanTypeEqualPayment: "Equal payment",
-    loanTypeEqualPrincipal: "Equal principal",
-    annualRateShort: "APR",
-    monthsUnit: "months",
-    loanPaidSentence: "{paid} of {total} months paid.",
-    loanRemainingSentence: "{months} months remaining.",
-    loanRemainingYearSentence: "{months} months remaining · about {years}y {leftMonths}m.",
-    notEntered: "Not entered",
-    moneyTypeEditorTitle: "Settings · Money type editor",
-    addTypeRequired: "Please enter a type name.",
-    duplicateType: "This type already exists.",
-    minTypeRequired: "At least one type is required.",
-    moneyTypeHint: "You can add types like emergency fund, CMA, or cash.",
-    chartMonthTitle: "{year}-{month}",
-    chartDatasetMonth: "{year}-{month}",
-    excelNoData: "No data found in the Excel file.",
-    emailPasswordRequired: "Please enter email and password.",
-    accountNameRequired: "Please enter an account name.",
-    cardRequired: "Please enter card name and payment day.",
-    subRequired: "Please enter subscription name and amount.",
-    amountRequired: "Please enter an amount.",
-    budgetRequired: "Please enter a budget amount.",
-    savingRequired: "Please enter a goal name and target amount.",
-    loanRequired: "Please enter all loan information.",
-
     account: "Account",
     card: "Card",
     savingsType: "Savings",
@@ -486,12 +420,6 @@ export default function App() {
   const [language, setLanguage] = useState(localStorage.getItem("language") || "ko");
   const [currency, setCurrency] = useState(localStorage.getItem("currency") || "KRW");
   const tr = (key) => I18N[language]?.[key] || key;
-  const ui = (ko, en) => (language === "en" ? en : ko);
-  const fmt = (key, vars = {}) =>
-    Object.entries(vars).reduce(
-      (out, [name, value]) => out.replaceAll(`{${name}}`, value),
-      tr(key)
-    );
 
   const catLabel = (value) => {
     const map = {
@@ -595,17 +523,17 @@ export default function App() {
   }, []);
 
   const login = async () => {
-    if (!email || !password) return alert(tr("emailPasswordRequired"));
+    if (!email || !password) return alert("이메일과 비밀번호를 입력해주세요");
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) return alert(error.message);
     if (data.user) await loadUserData(data.user);
   };
 
   const signup = async () => {
-    if (!email || !password) return alert(tr("emailPasswordRequired"));
+    if (!email || !password) return alert("이메일과 비밀번호를 입력해주세요");
     const { error } = await supabase.auth.signUp({ email, password });
     if (error) return alert(error.message);
-    showPopup(ui("회원가입 완료! 이메일 확인이 필요할 수 있어요.", "Sign-up complete. Email verification may be required."), ui("회원가입 완료", "Sign-up complete"), "💌");
+    showPopup(text("회원가입 완료! 이메일 확인이 필요할 수 있어요.", "Sign-up complete. Email verification may be required."), text("회원가입 완료", "Sign-up complete"), "💌");
   };
 
   const showPopup = (message, title = "완료", emoji = "💗") => {
@@ -676,7 +604,7 @@ export default function App() {
   };
 
   const addAccount = () => {
-    if (!accountName) return alert(tr("accountNameRequired"));
+    if (!accountName) return alert("계좌명을 입력해주세요");
     const next = [...accounts, { id: Date.now(), name: accountName, balance: Number(accountBalance || 0) }];
     setAccounts(next);
     saveLocal("accounts", next);
@@ -692,7 +620,7 @@ export default function App() {
   };
 
   const addCard = () => {
-    if (!cardName || !cardPayDay) return alert(tr("cardRequired"));
+    if (!cardName || !cardPayDay) return alert("카드명과 결제일을 입력해주세요");
     const next = [...cards, { id: Date.now(), name: cardName, payDay: Number(cardPayDay) }];
     setCards(next);
     saveLocal("cards", next);
@@ -708,7 +636,7 @@ export default function App() {
   };
 
   const addSub = () => {
-    if (!subName || !subAmount) return alert(tr("subRequired"));
+    if (!subName || !subAmount) return alert("구독명과 금액을 입력해주세요");
     const next = [...subs, { id: Date.now(), name: subName, amount: Number(subAmount), day: Number(subDay || 1) }];
     setSubs(next);
     saveLocal("subs", next);
@@ -883,7 +811,7 @@ export default function App() {
   };
 
   const saveTx = async () => {
-    if (!amount) return alert(tr("amountRequired"));
+    if (!amount) return alert("금액을 입력해주세요");
 
     const finalType = moneyType !== transferTo && category === "이체" ? "transfer" : type;
 
@@ -925,7 +853,7 @@ export default function App() {
       };
 
       setTxs(txs.map(t => t.id === editingTxId ? updatedTx : t));
-      showPopup(ui("입출금 내역이 수정됐어요.", "Transaction updated."), ui("수정 완료", "Updated"), "✏️");
+      showPopup(text("입출금 내역이 수정됐어요.", "Transaction updated."), text("수정 완료", "Updated"), "✏️");
       cancelTxEdit();
       return;
     }
@@ -969,9 +897,9 @@ export default function App() {
     setTransferTo("카드");
     setEditingTxId(null);
 
-    if (repeat === "monthly") showPopup(ui("매월 반복 내역 12개월치가 추가됐어요.", "12 monthly recurring transactions added."), ui("반복 등록 완료", "Recurring entry saved"), "🔁");
-    else if (repeat === "weekly") showPopup(ui("매주 반복 내역 8주치가 추가됐어요.", "8 weekly recurring transactions added."), ui("반복 등록 완료", "Recurring entry saved"), "🔁");
-    else showPopup(ui("입출금 내역이 추가됐어요.", "Transaction added."), ui("기록 완료", "Saved"), "💸");
+    if (repeat === "monthly") showPopup(text("매월 반복 내역 12개월치가 추가됐어요.", "12 monthly recurring transactions added."), text("반복 등록 완료", "Recurring entry saved"), "🔁");
+    else if (repeat === "weekly") showPopup(text("매주 반복 내역 8주치가 추가됐어요.", "8 weekly recurring transactions added."), text("반복 등록 완료", "Recurring entry saved"), "🔁");
+    else showPopup(text("입출금 내역이 추가됐어요.", "Transaction added."), text("기록 완료", "Saved"), "💸");
   };
 
   const editTx = (tx) => {
@@ -999,7 +927,7 @@ export default function App() {
   };
 
   const deleteTx = async (txId) => {
-    if (!window.confirm(ui("이 입출금 내역을 삭제할까요?", "Delete this transaction?"))) return;
+    if (!window.confirm(text("이 입출금 내역을 삭제할까요?", "Delete this transaction?"))) return;
 
     const { error } = await supabase
       .from("transactions")
@@ -1010,7 +938,7 @@ export default function App() {
     if (error) return alert(error.message);
 
     setTxs(txs.filter(t => t.id !== txId));
-    showPopup(ui("입출금 내역이 삭제됐어요.", "Transaction deleted."), ui("삭제 완료", "Deleted"), "🗑️");
+    showPopup(text("입출금 내역이 삭제됐어요.", "Transaction deleted."), text("삭제 완료", "Deleted"), "🗑️");
   };
 
   const handleExcelUpload = async (event) => {
@@ -1023,7 +951,7 @@ export default function App() {
     const rows = XLSX.utils.sheet_to_json(sheet, { defval: "" });
 
     if (!rows.length) {
-      alert(tr("excelNoData"));
+      alert("엑셀에서 데이터를 찾지 못했어요.");
       return;
     }
 
@@ -1078,7 +1006,7 @@ export default function App() {
   };
 
   const saveBudget = async () => {
-    if (!budgetAmount) return alert(tr("budgetRequired"));
+    if (!budgetAmount) return alert("예산 금액을 입력해주세요");
 
     const { data, error } = await supabase
       .from("budgets")
@@ -1102,7 +1030,7 @@ export default function App() {
   };
 
   const saveSaving = async () => {
-    if (!savingName || !savingTarget) return alert(tr("savingRequired"));
+    if (!savingName || !savingTarget) return alert("목표명과 목표 금액을 입력해주세요");
 
     if (editingSavingId) {
       const { data, error } = await supabase
@@ -1125,7 +1053,7 @@ export default function App() {
         target: Number(data.target),
         current: Number(data.current || 0),
       } : s));
-      showPopup(ui("저축 목표가 수정됐어요.", "Savings goal updated."), ui("수정 완료", "Updated"), "🐷");
+      showPopup(text("저축 목표가 수정됐어요.", "Savings goal updated."), text("수정 완료", "Updated"), "🐷");
     } else {
       const { data, error } = await supabase
         .from("savings")
@@ -1146,7 +1074,7 @@ export default function App() {
         target: Number(data.target),
         current: Number(data.current || 0),
       }]);
-      showPopup(ui("저축 목표가 추가됐어요.", "Savings goal added."), ui("저축 목표 추가", "Savings goal added"), "🐷");
+      showPopup(text("저축 목표가 추가됐어요.", "Savings goal added."), text("저축 목표 추가", "Savings goal added"), "🐷");
     }
 
     setEditingSavingId(null);
@@ -1171,7 +1099,7 @@ export default function App() {
   };
 
   const deleteSaving = async (savingId) => {
-    if (!window.confirm(ui("이 저축 목표를 삭제할까요?", "Delete this savings goal?"))) return;
+    if (!window.confirm(text("이 저축 목표를 삭제할까요?", "Delete this savings goal?"))) return;
 
     const { error } = await supabase
       .from("savings")
@@ -1192,7 +1120,7 @@ export default function App() {
 
   const saveLoan = async () => {
     if (!loanName || !loanPrincipal || !loanRate || !loanTerm) {
-      return alert(tr("loanRequired"));
+      return alert("대출 정보를 모두 입력해주세요");
     }
 
     const payload = {
@@ -1224,7 +1152,7 @@ export default function App() {
         startDate: data.start,
         type: data.type,
       } : l));
-      showPopup(ui("대출건이 수정됐어요.", "Loan updated."), ui("수정 완료", "Updated"), "🏦");
+      showPopup(text("대출건이 수정됐어요.", "Loan updated."), text("수정 완료", "Updated"), "🏦");
     } else {
       const { data, error } = await supabase
         .from("loans")
@@ -1246,7 +1174,7 @@ export default function App() {
         startDate: data.start,
         type: data.type,
       }]);
-      showPopup(ui("대출건이 추가됐어요. 입출금 카테고리에 대출명이 자동으로 표시돼요.", "Loan added. The loan name will appear in transaction categories."), ui("대출 추가 완료", "Loan added"), "🏦");
+      showPopup(text("대출건이 추가됐어요. 입출금 카테고리에 대출명이 자동으로 표시돼요.", "Loan added. The loan name will appear in transaction categories."), text("대출 추가 완료", "Loan added"), "🏦");
     }
 
     setEditingLoanId(null);
@@ -1280,7 +1208,7 @@ export default function App() {
   };
 
   const deleteLoan = async (loanId) => {
-    if (!window.confirm(ui("이 대출건을 삭제할까요?", "Delete this loan?"))) return;
+    if (!window.confirm(text("이 대출건을 삭제할까요?", "Delete this loan?"))) return;
 
     const { error } = await supabase
       .from("loans")
@@ -1334,6 +1262,9 @@ export default function App() {
     const progress = Number(loan.principal) > 0
       ? Math.min(100, Math.round((paidAmount / Number(loan.principal)) * 100))
       : 0;
+    const yearsLeft = Math.floor(remainingMonths / 12);
+    const monthsLeft = remainingMonths % 12;
+
     const actualPaidMonths = monthlyPayment > 0
       ? Math.min(totalMonths, Math.floor(paidAmount / monthlyPayment))
       : paidMonths;
@@ -1473,10 +1404,10 @@ export default function App() {
 
               <div className="type-toggle">
                 <button className={`type-btn ${type === "expense" ? "active-expense" : ""}`} onClick={() => {setType("expense"); setCategory("식비");}}>
-                  {tr("expenseButton")}
+                  expenseButton
                 </button>
                 <button className={`type-btn ${type === "income" ? "active-income" : ""}`} onClick={() => {setType("income"); setCategory("월급");}}>
-                  {tr("incomeButton")}
+                  incomeButton
                 </button>
               </div>
 
@@ -1511,7 +1442,7 @@ export default function App() {
                   <select className="form-select" value={transferTo} onChange={e => setTransferTo(e.target.value)}>
                     {moneyTypes.map(mt => <option key={mt} value={mt}>{moneyTypeLabel(mt)}</option>)}
                   </select>
-                  <div className="hint">{tr("transferHint")}</div>
+                  <div className="hint">계좌/카드/저축/투자 간 이동은 수입·지출 합계에 포함되지 않아요.</div>
                 </div>
               )}
 
@@ -1530,7 +1461,7 @@ export default function App() {
                 </button>
                 {editingTxId && (
                   <button className="btn btn-secondary" onClick={cancelTxEdit}>
-                    {tr("cancel")}
+                    cancel
                   </button>
                 )}
               </div>
@@ -1541,7 +1472,7 @@ export default function App() {
               <div className="grid4">
                 {typeSummary.map(row => (
                   <div className="sum-card" key={row.type}>
-                    <div className="sum-lbl">{moneyTypeLabel(row.type)}</div>
+                    <div className="sum-lbl">{row.type}</div>
                     <div className="sum-val income">+{won(row.income + row.transferIn)}</div>
                     <div className="sum-val expense">-{won(row.expense + row.transferOut)}</div>
                   </div>
@@ -1552,11 +1483,7 @@ export default function App() {
 
             <section className="card">
               <div className="card-title">{tr("excel")}</div>
-              <label className="file-upload-ui">
-                <input type="file" accept=".xlsx,.xls,.csv" onChange={handleExcelUpload} />
-                <span className="file-upload-btn">{language === "en" ? "Choose file" : "파일 선택"}</span>
-                <span className="file-upload-text">{language === "en" ? "No file selected" : "선택된 파일 없음"}</span>
-              </label>
+              <input className="form-input" type="file" accept=".xlsx,.xls,.csv" onChange={handleExcelUpload} />
               <div className="hint">{tr("excelHint")}</div>
             </section>
           </>
@@ -1566,11 +1493,7 @@ export default function App() {
           <section className="card">
             <div className="card-title">{tr("txList")}</div>
 
-            <label className="file-upload-ui">
-                <input type="file" accept=".xlsx,.xls,.csv" onChange={handleExcelUpload} />
-                <span className="file-upload-btn">{language === "en" ? "Choose file" : "파일 선택"}</span>
-                <span className="file-upload-text">{language === "en" ? "No file selected" : "선택된 파일 없음"}</span>
-              </label>
+            <input className="form-input" type="file" accept=".xlsx,.xls,.csv" onChange={handleExcelUpload} />
 
             <div className="grid3">
               <div className="sum-card"><div className="sum-lbl">{tr("income")}</div><div className="sum-val income">{won(income)}</div></div>
@@ -1586,10 +1509,10 @@ export default function App() {
                     <div className="tx-meta">
                       {t.date} · {catLabel(t.category)} · {moneyTypeLabel(t.moneyType || "계좌")}
                       {t.type === "transfer" ? ` → ${moneyTypeLabel(t.transferTo)}` : ""}
-                      {t.repeat !== "none" ? ` · ${t.repeat === "monthly" ? tr("repeatMonthly") : tr("repeatWeekly")}` : ""}
+                      {t.repeat !== "none" ? ` · ${t.repeat === "monthly" ? "매월 반복" : "매주 반복"}` : ""}
                     </div>
                   </div>
-                  <div className={`tx-amt ${t.type}`}>{t.type === "transfer" ? `${tr("txTransferPrefix")} ` : t.type === "income" ? "+" : "-"}{won(t.amount)}</div>
+                  <div className={`tx-amt ${t.type}`}>{t.type === "transfer" ? "이체 " : t.type === "income" ? "+" : "-"}{won(t.amount)}</div>
                   <div className="tx-actions">
                     <button onClick={() => editTx(t)}>{tr("edit")}</button>
                     <button onClick={() => deleteTx(t.id)}>{tr("delete")}</button>
@@ -1626,7 +1549,7 @@ export default function App() {
             <section className="card">
               <div className="card-title">{tr("budgetByCategory")}</div>
               <select className="form-select" value={budgetCat} onChange={e => setBudgetCat(e.target.value)}>
-                {CATS_EXP.map(c => <option key={c} value={c}>{catLabel(c)}</option>)}
+                {CATS_EXP.map(c => <option key={c}>{c}</option>)}
               </select>
               <input className="form-input" type="number" placeholder={tr("monthlyBudget")} value={budgetAmount} onChange={e => setBudgetAmount(e.target.value)} />
               <button className="btn btn-primary" onClick={saveBudget}>{tr("saveBudget")}</button>
@@ -1637,7 +1560,7 @@ export default function App() {
                   const pct = Math.min(100, Math.round(used / b.amount * 100));
                   return (
                     <div className="budget-item" key={b.category}>
-                      <div className="budget-top"><b>{catLabel(b.category)}</b><span>{won(used)} / {won(b.amount)}</span></div>
+                      <div className="budget-top"><b>{b.category}</b><span>{won(used)} / {won(b.amount)}</span></div>
                       <div className="bar-bg"><div className="bar-fill" style={{ width: pct + "%" }} /></div>
                     </div>
                   );
@@ -1665,20 +1588,20 @@ export default function App() {
 
               <input
                 className="form-input"
-                placeholder={tr("savingNamePlaceholder")}
+                placeholder="목표명 예: 비상금, 여행 적금"
                 value={savingName}
                 onChange={e => setSavingName(e.target.value)}
               />
               <input
                 className="form-input"
-                placeholder={tr("savingTargetPlaceholder")}
+                placeholder="목표 금액"
                 type="number"
                 value={savingTarget}
                 onChange={e => setSavingTarget(e.target.value)}
               />
               <input
                 className="form-input"
-                placeholder={tr("savingCurrentPlaceholder")}
+                placeholder="현재 모은 금액"
                 type="number"
                 value={savingCurrent}
                 onChange={e => setSavingCurrent(e.target.value)}
@@ -1690,7 +1613,7 @@ export default function App() {
                 </button>
                 {editingSavingId && (
                   <button className="btn btn-secondary" onClick={cancelSavingEdit}>
-                    {tr("cancel")}
+                    cancel
                   </button>
                 )}
               </div>
@@ -1803,7 +1726,7 @@ export default function App() {
                   <div className="asset-item" key={c.id}>
                     <div>
                       <b>{c.name}</b>
-                      <span>{`${tr("monthlyDay")} ${c.payDay} · ${getCardDDay(c.payDay)}`}</span>
+                      <span>{language === "en" ? `Monthly day ${c.payDay} · ${getCardDDay(c.payDay)}` : `${tr("monthlyDay")} ${c.payDay} · ${getCardDDay(c.payDay)}`}</span>
                     </div>
                     <button onClick={() => deleteCard(c.id)}>{tr("delete")}</button>
                   </div>
@@ -1835,7 +1758,7 @@ export default function App() {
                   <div className="asset-item" key={su.id}>
                     <div>
                       <b>{su.name}</b>
-                      <span>{`${won(su.amount)} · ${tr("monthlyDay")} ${su.day}`}</span>
+                      <span>{language === "en" ? `${won(su.amount)} · Monthly day ${su.day}` : `${won(su.amount)} · 매월 ${su.day}일`}</span>
                     </div>
                     <button onClick={() => deleteSub(su.id)}>{tr("delete")}</button>
                   </div>
@@ -1868,7 +1791,7 @@ export default function App() {
               </button>
               {editingLoanId && (
                 <button className="btn btn-secondary" onClick={cancelLoanEdit}>
-                  {tr("cancel")}
+                  cancel
                 </button>
               )}
             </div>
@@ -1882,7 +1805,7 @@ export default function App() {
                     <div className="loan-head">
                       <div>
                         <h3>{l.name}</h3>
-                        <p>{l.type === "equal_payment" ? tr("loanTypeEqualPayment") : tr("loanTypeEqualPrincipal")} · {tr("annualRateShort")} {l.rate}% · {l.term}{tr("monthsUnit")}</p>
+                        <p>{l.type === "equal_payment" ? "원리금균등" : "원금균등"} · 연 {l.rate}% · {l.term}개월</p>
                       </div>
                       <div className="loan-progress-num">{summary.progress}%</div>
                     </div>
@@ -1915,9 +1838,13 @@ export default function App() {
                     </div>
 
                     <div className="loan-detail">
-                      <div dangerouslySetInnerHTML={{__html: fmt("loanPaidSentence", { total: summary.totalMonths, paid: `<b>${summary.paidMonths}</b>` })}} />
-                      <div>{summary.yearsLeft > 0 ? fmt("loanRemainingYearSentence", { months: summary.remainingMonths, years: summary.yearsLeft, leftMonths: summary.monthsLeft }) : fmt("loanRemainingSentence", { months: summary.remainingMonths })}</div>
-                      <div>{tr("startDate")}: {l.startDate || tr("notEntered")}</div>
+                      <div>총 {summary.totalMonths}개월 중 <b>{summary.paidMonths}개월치</b> 갚았어요.</div>
+                      <div>
+                        앞으로 <b>{summary.remainingMonths}개월</b>
+                        {summary.yearsLeft > 0 && <> · 약 <b>{summary.yearsLeft}년 {summary.monthsLeft}개월</b></>}
+                        남았어요.
+                      </div>
+                      <div>{tr("startDate")}: {l.startDate || "미입력"}</div>
                     </div>
 
                     <div className="loan-card-actions">
@@ -1934,7 +1861,7 @@ export default function App() {
         {tab === "settings" && (
           <section className="card">
             <div className="language-setting-card">
-              <div className="card-title">{tr("language")}</div>
+              <div className="card-title">language</div>
               <select
                 className="form-select"
                 value={language}
@@ -1949,7 +1876,7 @@ export default function App() {
             </div>
 
             <div className="currency-setting-card">
-              <div className="card-title">{tr("currency")}</div>
+              <div className="card-title">currency</div>
               <select
                 className="form-select"
                 value={currency}
@@ -1964,7 +1891,7 @@ export default function App() {
               </select>
             </div>
 
-            <div className="card-title">{tr("moneyTypeEditorTitle")}</div>
+            <div className="card-title">settings · 출입금 유형 편집</div>
 
             <div className="form-group">
               <label className="form-label">{tr("newTypeAdd")}</label>
@@ -1979,8 +1906,8 @@ export default function App() {
                   className="btn btn-primary"
                   onClick={() => {
                     const v = newMoneyType.trim();
-                    if (!v) return alert(tr("addTypeRequired"));
-                    if (moneyTypes.includes(v)) return alert(tr("duplicateType"));
+                    if (!v) return alert("add할 유형명을 입력해주세요");
+                    if (moneyTypes.includes(v)) return alert("이미 있는 유형이에요");
                     const next = [...moneyTypes, v];
                     setMoneyTypes(next);
                     localStorage.setItem("moneyTypes", JSON.stringify(next));
@@ -1999,7 +1926,7 @@ export default function App() {
                   <button
                     className="small-delete"
                     onClick={() => {
-                      if (moneyTypes.length <= 1) return alert(tr("minTypeRequired"));
+                      if (moneyTypes.length <= 1) return alert("유형은 최소 1개 필요해요");
                       const next = moneyTypes.filter(x => x !== mt);
                       setMoneyTypes(next);
                       localStorage.setItem("moneyTypes", JSON.stringify(next));
@@ -2013,7 +1940,7 @@ export default function App() {
               ))}
             </div>
 
-            <div className="hint">{tr("moneyTypeHint")}</div>
+            <div className="hint">계좌, 카드, 저축, 투자 외에 비상금/CMA/현금 같은 유형을 add할 수 있어요.</div>
           </section>
         )}
 
@@ -2023,7 +1950,7 @@ export default function App() {
               <button className="month-arrow" onClick={() => moveChartMonth(-1)}>‹</button>
               <div>
                 <div className="card-title">{tr("chart")}</div>
-                <div className="chart-month-title">{fmt("chartMonthTitle", { year: chartYear, month: chartMonth + 1 })}</div>
+                <div className="chart-month-title">{chartYear}년 {chartMonth + 1}월</div>
               </div>
               <button className="month-arrow" onClick={() => moveChartMonth(1)}>›</button>
             </div>
@@ -2047,7 +1974,7 @@ export default function App() {
               <div className="chart-box">
                 <div className="card-title">income category</div>
                 {chartIncomeMap.length === 0 ? (
-                  <div className="empty">{tr("noIncomeData")}</div>
+                  <div className="empty">{language === "en" ? "No income data this month" : "이 달의 수입 데이터가 없어요"}</div>
                 ) : (
                   <Doughnut
                     data={{
@@ -2064,7 +1991,7 @@ export default function App() {
               <div className="chart-box">
                 <div className="card-title">expense category</div>
                 {chartExpenseMap.length === 0 ? (
-                  <div className="empty">{tr("noExpenseData")}</div>
+                  <div className="empty">{language === "en" ? "No expense data this month" : "이 달의 지출 데이터가 없어요"}</div>
                 ) : (
                   <Doughnut
                     data={{
@@ -2085,7 +2012,7 @@ export default function App() {
                 data={{
                   labels: [tr("income"), tr("expense"), tr("balance")],
                   datasets: [{
-                    label: fmt("chartDatasetMonth", { year: chartYear, month: chartMonth + 1 }),
+                    label: `${chartYear}년 ${chartMonth + 1}월`,
                     data: [chartMonthIncome, chartMonthExpense, chartMonthIncome - chartMonthExpense],
                   }],
                 }}

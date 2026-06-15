@@ -1008,3 +1008,64 @@ input[type="file"].form-input::file-selector-button:hover{
 .currency-setting-card .card-title{
   margin-bottom:10px;
 }
+
+/* Stable chart sizing after i18n cleanup */
+.chart-box{
+  height:340px !important;
+  max-height:340px !important;
+  overflow:hidden !important;
+  position:relative;
+}
+
+.chart-box.wide{
+  height:360px !important;
+  max-height:360px !important;
+}
+
+.chart-box canvas{
+  max-height:280px !important;
+}
+
+.chart-box.wide canvas{
+  max-height:300px !important;
+}
+
+.file-upload-ui{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  width:100%;
+  min-height:52px;
+  border:1px solid #FFD6E5;
+  border-radius:16px;
+  background:#fff;
+  padding:10px 14px;
+  box-sizing:border-box;
+}
+
+.file-upload-ui input{
+  display:none;
+}
+
+.file-upload-btn{
+  flex:0 0 auto;
+  border-radius:999px;
+  background:#E05585;
+  color:#fff;
+  padding:10px 16px;
+  font-size:13px;
+  font-weight:900;
+  cursor:pointer;
+}
+
+.file-upload-text{
+  color:#7A4358;
+  font-size:13px;
+}
+
+@media(max-width:700px){
+  .file-upload-ui{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+}

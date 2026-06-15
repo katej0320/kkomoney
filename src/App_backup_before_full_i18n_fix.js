@@ -51,9 +51,9 @@ const DEFAULT_MONEY_TYPES = ["계좌", "카드", "저축", "투자"];
 
 const I18N = {
   ko: {
-    main: "메인",
-    money: "자산관리",
-    system: "시스템",
+    main: "Main",
+    money: "Money",
+    system: "System",
     home: "홈",
     tx: "내역",
     chart: "분석",
@@ -65,51 +65,8 @@ const I18N = {
     settings: "설정",
     logout: "로그아웃",
 
-    login: "로그인",
-    signup: "회원가입",
-    email: "이메일",
-    password: "비밀번호",
-    loading: "로딩 중...",
-    authSub: "내 돈을 귀엽게 관리해요 💗",
-    confirm: "확인",
-
-    language: "언어 설정",
-    korean: "한국어",
-    english: "English",
     currency: "통화 설정",
-
-    remainingBudget: "이번 달 남은 예산",
-    quickInput: "빠른 입력",
-    editTx: "입출금 수정",
-    amount: "금액",
-    memo: "내용",
-    category: "카테고리",
-    moneyType: "출입금 유형",
-    transferTo: "이체 도착 유형",
-    repeat: "반복",
-    noRepeat: "반복 없음",
-    monthlyRepeat: "매월 반복",
-    weeklyRepeat: "매주 반복",
-    save: "저장",
-    updateSave: "수정 저장",
-    cancel: "취소",
-
-    income: "수입",
-    expense: "지출",
-    balance: "잔액",
-    transfer: "이체",
-    transferExcluded: "합계 제외",
-
-    expenseButton: "지출 💸",
-    incomeButton: "수입 💰",
-
-    excel: "엑셀/CSV 가져오기",
-    excelHint: "날짜, 내용, 금액이 있는 엑셀 파일을 넣으면 자동으로 내역에 추가돼요.",
-    txList: "거래 내역",
-    typeSummary: "유형별 출입금 요약",
-    typeSummaryHint: "이체는 유형별 이동에는 표시되지만 전체 수입/지출에는 계산되지 않아요.",
-    noTx: "아직 내역이 없어요",
-
+    budgetTitle: "예산",
     budgetUsage: "예산 사용률",
     totalBudget: "총 예산",
     used: "사용",
@@ -118,21 +75,7 @@ const I18N = {
     budgetByCategory: "카테고리별 예산",
     monthlyBudget: "월 예산",
     saveBudget: "예산 저장",
-
-    savingProgress: "저축 목표 달성률",
-    totalTarget: "목표 합계",
-    totalCurrent: "현재 합계",
-    leftAmount: "남은 금액",
-    addSaving: "저축 목표 추가",
-    editSaving: "저축 목표 수정",
-    savingStatus: "저축 현황",
-    savingNamePlaceholder: "목표명 예: 비상금, 여행 적금",
-    savingTargetPlaceholder: "목표 금액",
-    savingCurrentPlaceholder: "현재 모은 금액",
-    noSaving: "저축 목표가 없어요",
-    expectedDate: "예상 달성일",
-    unknownEstimate: "예상 불가",
-
+    assetsTitle: "자산",
     totalAccountBalance: "총 계좌 잔액",
     accountCount: "계좌 수",
     cardCount: "카드 수",
@@ -141,24 +84,14 @@ const I18N = {
     currentBalance: "현재 잔액",
     addAccount: "계좌 추가",
     assetTrend: "월별 자산 추이",
-    assetTrendHint: "계좌 잔액과 월별 수입/지출을 기준으로 계산한 간단 추이예요.",
-    expectedAssets: "예상 자산",
+    assetTrendHint: "A simple trend based on account balances and monthly income/expenses.",
     cardPaymentManage: "카드 결제일 관리",
     cardNamePlaceholder: "카드명 예: 신한카드",
     paymentDayPlaceholder: "결제일 예: 25",
     addCard: "카드 추가",
-    monthlyDay: "매월",
-
-    monthlySubscriptions: "월 구독료",
-    subCount: "구독 수",
-    subManage: "구독 관리",
-    subNamePlaceholder: "구독명 예: 넷플릭스, 유튜브",
-    subAmountPlaceholder: "월 구독료",
-    subDayPlaceholder: "결제일 예: 15",
-    addSub: "구독 추가",
-
+    loansTitle: "대출",
     loanManage: "대출 관리",
-    editLoan: "대출 수정",
+    editLoan: "대출 edit",
     loanNamePlaceholder: "대출명",
     principalPlaceholder: "대출 원금",
     ratePlaceholder: "연이율 %",
@@ -167,60 +100,65 @@ const I18N = {
     equalPayment: "원리금균등",
     equalPrincipal: "원금균등",
     addLoan: "대출 추가",
-    loanPrincipal: "대출 원금",
-    paidAmount: "누적 상환",
-    txApplied: "입출금 반영",
-    remainingLoan: "남은 잔금",
-    monthlyPayment: "월 상환액",
-    startDate: "시작일",
-
+    subscriptionsTitle: "구독",
+    monthlySubscriptions: "월 구독료",
+    subCount: "구독 수",
+    subManage: "구독 관리",
+    subNamePlaceholder: "구독명 예: 넷플릭스, 유튜브",
+    subAmountPlaceholder: "월 구독료",
+    subDayPlaceholder: "결제일 예: 15",
+    addSub: "구독 추가",
     settingsTitle: "설정",
     moneyTypeEdit: "출입금 유형 편집",
     newTypeAdd: "새 유형 추가",
     newTypePlaceholder: "예: 비상금, CMA, 현금",
-    add: "추가",
-    delete: "삭제",
-    edit: "수정",
+    add: "add",
+    language: "언어 설정",
+    korean: "한국어",
+    english: "English",
 
-    incomeCategory: "수입 카테고리",
-    expenseCategory: "지출 카테고리",
-    noIncomeData: "이 달의 수입 데이터가 없어요",
-    noExpenseData: "이 달의 지출 데이터가 없어요",
-    incomeExpenseCompare: "수입 / 지출 비교",
+    quickInput: "빠른 입력",
+    editTx: "입출금 edit",
+    amount: "금액",
+    memo: "내용",
+    category: "카테고리",
+    moneyType: "출입금 유형",
+    repeat: "반복",
+    noRepeat: "반복 없음",
+    monthlyRepeat: "매월 반복",
+    weeklyRepeat: "매주 반복",
+    save: "저장",
+    updateSave: "edit 저장",
+    cancel: "취소",
 
+    income: "수입",
+    expense: "지출",
+    balance: "잔액",
+    transfer: "이체",
+    excluded: "합계 제외",
 
-    transferHint: "계좌/카드/저축/투자 간 이동은 수입·지출 합계에 포함되지 않아요.",
-    repeatMonthly: "매월 반복",
-    repeatWeekly: "매주 반복",
-    txTransferPrefix: "이체",
-    savingNamePlaceholder: "목표명 예: 비상금, 여행 적금",
-    savingTargetPlaceholder: "목표 금액",
-    savingCurrentPlaceholder: "현재 모은 금액",
-    loanTypeEqualPayment: "원리금균등",
-    loanTypeEqualPrincipal: "원금균등",
-    annualRateShort: "연",
-    monthsUnit: "개월",
-    loanPaidSentence: "총 {total}개월 중 {paid}개월치 갚았어요.",
-    loanRemainingSentence: "앞으로 {months}개월 남았어요.",
-    loanRemainingYearSentence: "앞으로 {months}개월 · 약 {years}년 {leftMonths}개월 남았어요.",
-    notEntered: "미입력",
-    moneyTypeEditorTitle: "설정 · 출입금 유형 편집",
-    addTypeRequired: "추가할 유형명을 입력해주세요",
-    duplicateType: "이미 있는 유형이에요",
-    minTypeRequired: "유형은 최소 1개 필요해요",
-    moneyTypeHint: "계좌, 카드, 저축, 투자 외에 비상금/CMA/현금 같은 유형을 추가할 수 있어요.",
-    chartMonthTitle: "{year}년 {month}월",
-    chartDatasetMonth: "{year}년 {month}월",
-    excelNoData: "엑셀에서 데이터를 찾지 못했어요.",
-    emailPasswordRequired: "이메일과 비밀번호를 입력해주세요",
-    accountNameRequired: "계좌명을 입력해주세요",
-    cardRequired: "카드명과 결제일을 입력해주세요",
-    subRequired: "구독명과 금액을 입력해주세요",
-    amountRequired: "금액을 입력해주세요",
-    budgetRequired: "예산 금액을 입력해주세요",
-    savingRequired: "목표명과 목표 금액을 입력해주세요",
-    loanRequired: "대출 정보를 모두 입력해주세요",
+    excel: "엑셀/CSV 가져오기",
+    excelHint: "날짜, 내용, 금액이 있는 엑셀 파일을 넣으면 자동으로 내역에 add돼요.",
+    txList: "거래 내역",
+    typeSummary: "유형별 출입금 요약",
+    typeSummaryHint: "이체는 유형별 이동에는 표시되지만 전체 수입/지출에는 계산되지 않아요.",
 
+    budgetUsage: "예산 사용률",
+    totalBudget: "총 예산",
+    used: "사용",
+    carryOver: "자동 이월",
+    nextBudget: "다음달 예산",
+    budgetByCategory: "카테고리별 예산",
+    saveBudget: "예산 저장",
+
+    savingProgress: "저축 목표 달성률",
+    totalTarget: "목표 합계",
+    totalCurrent: "현재 합계",
+    leftAmount: "남은 금액",
+    remainingBudget: "이번 달 남은 예산",
+    transferExcluded: "합계 제외",
+    expenseButton: "지출 💸",
+    incomeButton: "수입 💰",
     account: "계좌",
     card: "카드",
     savingsType: "저축",
@@ -241,7 +179,27 @@ const I18N = {
     interest: "이자",
     refund: "환급",
     carryForward: "이월",
-    otherIncome: "기타수입"
+    otherIncome: "기타수입",
+    addSaving: "저축 목표 add",
+    editSaving: "저축 목표 edit",
+    savingStatus: "저축 현황",
+
+    loanManage: "대출 관리",
+    editLoan: "대출 edit",
+    addLoan: "대출 추가",
+
+    assetBalance: "총 계좌 잔액",
+    accountManage: "계좌별 잔액 관리",
+    cardManage: "카드 결제일 관리",
+    addAccount: "계좌 추가",
+    addCard: "카드 추가",
+
+    subManage: "구독 관리",
+    monthlySubs: "월 구독료",
+    addSub: "구독 추가",
+
+    delete: "Delete",
+    edit: "edit"
   },
   en: {
     main: "Main",
@@ -258,27 +216,64 @@ const I18N = {
     settings: "Settings",
     logout: "Logout",
 
-    login: "Log in",
-    signup: "Sign up",
-    email: "Email",
-    password: "Password",
-    loading: "Loading...",
-    authSub: "Manage your money beautifully 💗",
-    confirm: "OK",
-
+    currency: "Currency",
+    budgetTitle: "Budget",
+    budgetUsage: "Budget usage",
+    totalBudget: "Total budget",
+    used: "Used",
+    carryOver: "Carry-over",
+    nextBudget: "Next month budget",
+    budgetByCategory: "Budget by category",
+    monthlyBudget: "Monthly budget",
+    saveBudget: "Save budget",
+    assetsTitle: "Assets",
+    totalAccountBalance: "Total account balance",
+    accountCount: "Accounts",
+    cardCount: "Cards",
+    accountBalanceManage: "Account balances",
+    accountNamePlaceholder: "Account name e.g. Chase, Kakao Bank",
+    currentBalance: "Current balance",
+    addAccount: "Add account",
+    assetTrend: "Monthly asset trend",
+    assetTrendHint: "A simple trend based on account balances and monthly income/expenses.",
+    cardPaymentManage: "Card payment dates",
+    cardNamePlaceholder: "Card name e.g. Chase Sapphire",
+    paymentDayPlaceholder: "Payment day e.g. 25",
+    addCard: "Add card",
+    loansTitle: "Loans",
+    loanManage: "Loan management",
+    editLoan: "Edit loan",
+    loanNamePlaceholder: "Loan name",
+    principalPlaceholder: "Loan principal",
+    ratePlaceholder: "Annual interest %",
+    termPlaceholder: "Term in months",
+    loanStartDate: "Loan start date",
+    equalPayment: "Equal payment",
+    equalPrincipal: "Equal principal",
+    addLoan: "Add loan",
+    subscriptionsTitle: "Subscriptions",
+    monthlySubscriptions: "Monthly subscriptions",
+    subCount: "Subscriptions",
+    subManage: "Subscription management",
+    subNamePlaceholder: "Subscription e.g. Netflix, YouTube",
+    subAmountPlaceholder: "Monthly fee",
+    subDayPlaceholder: "Payment day e.g. 15",
+    addSub: "Add subscription",
+    settingsTitle: "Settings",
+    moneyTypeEdit: "Money type editor",
+    newTypeAdd: "Add new type",
+    newTypePlaceholder: "e.g. Emergency fund, CMA, Cash",
+    add: "Add",
     language: "Language",
     korean: "Korean",
     english: "English",
-    currency: "Currency",
 
-    remainingBudget: "Remaining budget this month",
     quickInput: "Quick entry",
     editTx: "Edit transaction",
     amount: "Amount",
     memo: "Description",
     category: "Category",
     moneyType: "Money type",
-    transferTo: "Transfer destination",
     repeat: "Repeat",
     noRepeat: "No repeat",
     monthlyRepeat: "Monthly",
@@ -291,17 +286,13 @@ const I18N = {
     expense: "Expense",
     balance: "Balance",
     transfer: "Transfer",
-    transferExcluded: "Excluded",
-
-    expenseButton: "Expense 💸",
-    incomeButton: "Income 💰",
+    excluded: "Excluded",
 
     excel: "Import Excel/CSV",
     excelHint: "Upload a file with date, description, and amount to add transactions automatically.",
     txList: "Transactions",
     typeSummary: "Summary by money type",
     typeSummaryHint: "Transfers are shown by type but excluded from total income and expenses.",
-    noTx: "No transactions yet",
 
     budgetUsage: "Budget usage",
     totalBudget: "Total budget",
@@ -309,111 +300,16 @@ const I18N = {
     carryOver: "Carry-over",
     nextBudget: "Next month budget",
     budgetByCategory: "Budget by category",
-    monthlyBudget: "Monthly budget",
     saveBudget: "Save budget",
 
     savingProgress: "Savings progress",
     totalTarget: "Total target",
     totalCurrent: "Current total",
     leftAmount: "Remaining",
-    addSaving: "Add savings goal",
-    editSaving: "Edit savings goal",
-    savingStatus: "Savings status",
-    savingNamePlaceholder: "Goal name e.g. emergency fund, trip",
-    savingTargetPlaceholder: "Target amount",
-    savingCurrentPlaceholder: "Current saved amount",
-    noSaving: "No savings goals yet",
-    expectedDate: "Estimated completion",
-    unknownEstimate: "Not enough data",
-
-    totalAccountBalance: "Total account balance",
-    accountCount: "Accounts",
-    cardCount: "Cards",
-    accountBalanceManage: "Account balances",
-    accountNamePlaceholder: "Account name e.g. Chase, Kakao Bank",
-    currentBalance: "Current balance",
-    addAccount: "Add account",
-    assetTrend: "Monthly asset trend",
-    assetTrendHint: "A simple trend based on account balances and monthly income/expenses.",
-    expectedAssets: "Estimated assets",
-    cardPaymentManage: "Card payment dates",
-    cardNamePlaceholder: "Card name e.g. Chase Sapphire",
-    paymentDayPlaceholder: "Payment day e.g. 25",
-    addCard: "Add card",
-    monthlyDay: "Monthly day",
-
-    monthlySubscriptions: "Monthly subscriptions",
-    subCount: "Subscriptions",
-    subManage: "Subscription management",
-    subNamePlaceholder: "Subscription e.g. Netflix, YouTube",
-    subAmountPlaceholder: "Monthly fee",
-    subDayPlaceholder: "Payment day e.g. 15",
-    addSub: "Add subscription",
-
-    loanManage: "Loan management",
-    editLoan: "Edit loan",
-    loanNamePlaceholder: "Loan name",
-    principalPlaceholder: "Loan principal",
-    ratePlaceholder: "Annual interest %",
-    termPlaceholder: "Term in months",
-    loanStartDate: "Loan start date",
-    equalPayment: "Equal payment",
-    equalPrincipal: "Equal principal",
-    addLoan: "Add loan",
-    loanPrincipal: "Loan principal",
-    paidAmount: "Paid amount",
-    txApplied: "Transactions applied",
-    remainingLoan: "Remaining balance",
-    monthlyPayment: "Monthly payment",
-    startDate: "Start date",
-
-    settingsTitle: "Settings",
-    moneyTypeEdit: "Money type editor",
-    newTypeAdd: "Add new type",
-    newTypePlaceholder: "e.g. Emergency fund, CMA, Cash",
-    add: "Add",
-    delete: "Delete",
-    edit: "Edit",
-
-    incomeCategory: "Income category",
-    expenseCategory: "Expense category",
-    noIncomeData: "No income data this month",
-    noExpenseData: "No expense data this month",
-    incomeExpenseCompare: "Income / Expense comparison",
-
-
-    transferHint: "Transfers between account/card/savings/investment are excluded from income and expense totals.",
-    repeatMonthly: "Monthly recurring",
-    repeatWeekly: "Weekly recurring",
-    txTransferPrefix: "Transfer",
-    savingNamePlaceholder: "Goal name e.g. emergency fund, trip",
-    savingTargetPlaceholder: "Target amount",
-    savingCurrentPlaceholder: "Current saved amount",
-    loanTypeEqualPayment: "Equal payment",
-    loanTypeEqualPrincipal: "Equal principal",
-    annualRateShort: "APR",
-    monthsUnit: "months",
-    loanPaidSentence: "{paid} of {total} months paid.",
-    loanRemainingSentence: "{months} months remaining.",
-    loanRemainingYearSentence: "{months} months remaining · about {years}y {leftMonths}m.",
-    notEntered: "Not entered",
-    moneyTypeEditorTitle: "Settings · Money type editor",
-    addTypeRequired: "Please enter a type name.",
-    duplicateType: "This type already exists.",
-    minTypeRequired: "At least one type is required.",
-    moneyTypeHint: "You can add types like emergency fund, CMA, or cash.",
-    chartMonthTitle: "{year}-{month}",
-    chartDatasetMonth: "{year}-{month}",
-    excelNoData: "No data found in the Excel file.",
-    emailPasswordRequired: "Please enter email and password.",
-    accountNameRequired: "Please enter an account name.",
-    cardRequired: "Please enter card name and payment day.",
-    subRequired: "Please enter subscription name and amount.",
-    amountRequired: "Please enter an amount.",
-    budgetRequired: "Please enter a budget amount.",
-    savingRequired: "Please enter a goal name and target amount.",
-    loanRequired: "Please enter all loan information.",
-
+    remainingBudget: "Remaining budget this month",
+    transferExcluded: "Excluded",
+    expenseButton: "Expense 💸",
+    incomeButton: "Income 💰",
     account: "Account",
     card: "Card",
     savingsType: "Savings",
@@ -434,10 +330,29 @@ const I18N = {
     interest: "Interest",
     refund: "Refund",
     carryForward: "Carry-forward",
-    otherIncome: "Other income"
+    otherIncome: "Other income",
+    addSaving: "Add savings goal",
+    editSaving: "Edit savings goal",
+    savingStatus: "Savings status",
+
+    loanManage: "Loan management",
+    editLoan: "Edit loan",
+    addLoan: "Add loan",
+
+    assetBalance: "Total account balance",
+    accountManage: "Account balances",
+    cardManage: "Card payment dates",
+    addAccount: "Add account",
+    addCard: "Add card",
+
+    subManage: "Subscription management",
+    monthlySubs: "Monthly subscriptions",
+    addSub: "Add subscription",
+
+    delete: "Delete",
+    edit: "Edit"
   }
 };
-
 
 function guessCategory(text, type) {
   const t = String(text || "");
@@ -486,12 +401,6 @@ export default function App() {
   const [language, setLanguage] = useState(localStorage.getItem("language") || "ko");
   const [currency, setCurrency] = useState(localStorage.getItem("currency") || "KRW");
   const tr = (key) => I18N[language]?.[key] || key;
-  const ui = (ko, en) => (language === "en" ? en : ko);
-  const fmt = (key, vars = {}) =>
-    Object.entries(vars).reduce(
-      (out, [name, value]) => out.replaceAll(`{${name}}`, value),
-      tr(key)
-    );
 
   const catLabel = (value) => {
     const map = {
@@ -595,17 +504,17 @@ export default function App() {
   }, []);
 
   const login = async () => {
-    if (!email || !password) return alert(tr("emailPasswordRequired"));
+    if (!email || !password) return alert("이메일과 비밀번호를 입력해주세요");
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) return alert(error.message);
     if (data.user) await loadUserData(data.user);
   };
 
   const signup = async () => {
-    if (!email || !password) return alert(tr("emailPasswordRequired"));
+    if (!email || !password) return alert("이메일과 비밀번호를 입력해주세요");
     const { error } = await supabase.auth.signUp({ email, password });
     if (error) return alert(error.message);
-    showPopup(ui("회원가입 완료! 이메일 확인이 필요할 수 있어요.", "Sign-up complete. Email verification may be required."), ui("회원가입 완료", "Sign-up complete"), "💌");
+    showPopup("회원가입 완료! 이메일 확인이 필요할 수 있어요.", "회원가입 완료", "💌");
   };
 
   const showPopup = (message, title = "완료", emoji = "💗") => {
@@ -676,7 +585,7 @@ export default function App() {
   };
 
   const addAccount = () => {
-    if (!accountName) return alert(tr("accountNameRequired"));
+    if (!accountName) return alert("계좌명을 입력해주세요");
     const next = [...accounts, { id: Date.now(), name: accountName, balance: Number(accountBalance || 0) }];
     setAccounts(next);
     saveLocal("accounts", next);
@@ -692,7 +601,7 @@ export default function App() {
   };
 
   const addCard = () => {
-    if (!cardName || !cardPayDay) return alert(tr("cardRequired"));
+    if (!cardName || !cardPayDay) return alert("카드명과 결제일을 입력해주세요");
     const next = [...cards, { id: Date.now(), name: cardName, payDay: Number(cardPayDay) }];
     setCards(next);
     saveLocal("cards", next);
@@ -708,7 +617,7 @@ export default function App() {
   };
 
   const addSub = () => {
-    if (!subName || !subAmount) return alert(tr("subRequired"));
+    if (!subName || !subAmount) return alert("구독명과 금액을 입력해주세요");
     const next = [...subs, { id: Date.now(), name: subName, amount: Number(subAmount), day: Number(subDay || 1) }];
     setSubs(next);
     saveLocal("subs", next);
@@ -762,19 +671,19 @@ export default function App() {
     const avg = values.length ? values.reduce((a,b) => a + b, 0) / values.length : 0;
     const left = Math.max(0, Number(sv.target) - Number(sv.current));
 
-    if (!avg || left <= 0) return tr("unknownEstimate");
+    if (!avg || left <= 0) return "예상 불가";
 
     const months = Math.ceil(left / avg);
     const targetDate = new Date();
     targetDate.setMonth(targetDate.getMonth() + months);
 
-    return language === "en" ? `${targetDate.getFullYear()}-${targetDate.getMonth() + 1} estimate` : `${targetDate.getFullYear()}년 ${targetDate.getMonth() + 1}월 예상`;
+    return `${targetDate.getFullYear()}년 ${targetDate.getMonth() + 1}월 예상`;
   };
 
   const assetTrendLabels = Array.from({ length: 6 }, (_, i) => {
     const d = new Date();
     d.setMonth(d.getMonth() - (5 - i));
-    return language === "en" ? `${d.getMonth() + 1}M` : `${d.getMonth() + 1}월`;
+    return `${d.getMonth() + 1}월`;
   });
 
   const assetTrendData = Array.from({ length: 6 }, (_, i) => {
@@ -883,7 +792,7 @@ export default function App() {
   };
 
   const saveTx = async () => {
-    if (!amount) return alert(tr("amountRequired"));
+    if (!amount) return alert("금액을 입력해주세요");
 
     const finalType = moneyType !== transferTo && category === "이체" ? "transfer" : type;
 
@@ -925,7 +834,7 @@ export default function App() {
       };
 
       setTxs(txs.map(t => t.id === editingTxId ? updatedTx : t));
-      showPopup(ui("입출금 내역이 수정됐어요.", "Transaction updated."), ui("수정 완료", "Updated"), "✏️");
+      showPopup("입출금 내역이 edit됐어요.", "edit 완료", "✏️");
       cancelTxEdit();
       return;
     }
@@ -969,9 +878,9 @@ export default function App() {
     setTransferTo("카드");
     setEditingTxId(null);
 
-    if (repeat === "monthly") showPopup(ui("매월 반복 내역 12개월치가 추가됐어요.", "12 monthly recurring transactions added."), ui("반복 등록 완료", "Recurring entry saved"), "🔁");
-    else if (repeat === "weekly") showPopup(ui("매주 반복 내역 8주치가 추가됐어요.", "8 weekly recurring transactions added."), ui("반복 등록 완료", "Recurring entry saved"), "🔁");
-    else showPopup(ui("입출금 내역이 추가됐어요.", "Transaction added."), ui("기록 완료", "Saved"), "💸");
+    if (repeat === "monthly") showPopup("매월 반복 내역 12개월치가 add됐어요.", "반복 등록 완료", "🔁");
+    else if (repeat === "weekly") showPopup("매주 반복 내역 8주치가 add됐어요.", "반복 등록 완료", "🔁");
+    else showPopup("입출금 내역이 add됐어요.", "기록 완료", "💸");
   };
 
   const editTx = (tx) => {
@@ -999,7 +908,7 @@ export default function App() {
   };
 
   const deleteTx = async (txId) => {
-    if (!window.confirm(ui("이 입출금 내역을 삭제할까요?", "Delete this transaction?"))) return;
+    if (!window.confirm("이 입출금 내역을 delete할까요?")) return;
 
     const { error } = await supabase
       .from("transactions")
@@ -1010,7 +919,7 @@ export default function App() {
     if (error) return alert(error.message);
 
     setTxs(txs.filter(t => t.id !== txId));
-    showPopup(ui("입출금 내역이 삭제됐어요.", "Transaction deleted."), ui("삭제 완료", "Deleted"), "🗑️");
+    showPopup("입출금 내역이 delete됐어요.", "delete 완료", "🗑️");
   };
 
   const handleExcelUpload = async (event) => {
@@ -1023,7 +932,7 @@ export default function App() {
     const rows = XLSX.utils.sheet_to_json(sheet, { defval: "" });
 
     if (!rows.length) {
-      alert(tr("excelNoData"));
+      alert("엑셀에서 데이터를 찾지 못했어요.");
       return;
     }
 
@@ -1078,7 +987,7 @@ export default function App() {
   };
 
   const saveBudget = async () => {
-    if (!budgetAmount) return alert(tr("budgetRequired"));
+    if (!budgetAmount) return alert("예산 금액을 입력해주세요");
 
     const { data, error } = await supabase
       .from("budgets")
@@ -1102,7 +1011,7 @@ export default function App() {
   };
 
   const saveSaving = async () => {
-    if (!savingName || !savingTarget) return alert(tr("savingRequired"));
+    if (!savingName || !savingTarget) return alert("목표명과 목표 금액을 입력해주세요");
 
     if (editingSavingId) {
       const { data, error } = await supabase
@@ -1125,7 +1034,7 @@ export default function App() {
         target: Number(data.target),
         current: Number(data.current || 0),
       } : s));
-      showPopup(ui("저축 목표가 수정됐어요.", "Savings goal updated."), ui("수정 완료", "Updated"), "🐷");
+      showPopup("저축 목표가 edit됐어요.", "edit 완료", "🐷");
     } else {
       const { data, error } = await supabase
         .from("savings")
@@ -1146,7 +1055,7 @@ export default function App() {
         target: Number(data.target),
         current: Number(data.current || 0),
       }]);
-      showPopup(ui("저축 목표가 추가됐어요.", "Savings goal added."), ui("저축 목표 추가", "Savings goal added"), "🐷");
+      showPopup("저축 목표가 add됐어요.", "저축 목표 add", "🐷");
     }
 
     setEditingSavingId(null);
@@ -1171,7 +1080,7 @@ export default function App() {
   };
 
   const deleteSaving = async (savingId) => {
-    if (!window.confirm(ui("이 저축 목표를 삭제할까요?", "Delete this savings goal?"))) return;
+    if (!window.confirm("이 저축 목표를 delete할까요?")) return;
 
     const { error } = await supabase
       .from("savings")
@@ -1192,7 +1101,7 @@ export default function App() {
 
   const saveLoan = async () => {
     if (!loanName || !loanPrincipal || !loanRate || !loanTerm) {
-      return alert(tr("loanRequired"));
+      return alert("대출 정보를 모두 입력해주세요");
     }
 
     const payload = {
@@ -1224,7 +1133,7 @@ export default function App() {
         startDate: data.start,
         type: data.type,
       } : l));
-      showPopup(ui("대출건이 수정됐어요.", "Loan updated."), ui("수정 완료", "Updated"), "🏦");
+      showPopup("대출건이 edit됐어요.", "edit 완료", "🏦");
     } else {
       const { data, error } = await supabase
         .from("loans")
@@ -1246,7 +1155,7 @@ export default function App() {
         startDate: data.start,
         type: data.type,
       }]);
-      showPopup(ui("대출건이 추가됐어요. 입출금 카테고리에 대출명이 자동으로 표시돼요.", "Loan added. The loan name will appear in transaction categories."), ui("대출 추가 완료", "Loan added"), "🏦");
+      showPopup("대출건이 add됐어요. 입출금 카테고리에 대출명이 자동으로 표시돼요.", "대출 add 완료", "🏦");
     }
 
     setEditingLoanId(null);
@@ -1280,7 +1189,7 @@ export default function App() {
   };
 
   const deleteLoan = async (loanId) => {
-    if (!window.confirm(ui("이 대출건을 삭제할까요?", "Delete this loan?"))) return;
+    if (!window.confirm("이 대출건을 delete할까요?")) return;
 
     const { error } = await supabase
       .from("loans")
@@ -1334,6 +1243,9 @@ export default function App() {
     const progress = Number(loan.principal) > 0
       ? Math.min(100, Math.round((paidAmount / Number(loan.principal)) * 100))
       : 0;
+    const yearsLeft = Math.floor(remainingMonths / 12);
+    const monthsLeft = remainingMonths % 12;
+
     const actualPaidMonths = monthlyPayment > 0
       ? Math.min(totalMonths, Math.floor(paidAmount / monthlyPayment))
       : paidMonths;
@@ -1367,29 +1279,29 @@ export default function App() {
     ? [...CATS_EXP, ...loanCategoryNames]
     : [...CATS_INC, ...loanCategoryNames];
 
-  if (loading) return <div className="auth-screen">{tr("loading")}</div>;
+  if (loading) return <div className="auth-screen">로딩 중...</div>;
 
   if (!user) {
     return (
       <div className="auth-screen">
-        <div className="auth-logo">kko<span>{tr("money")}</span></div>
-        <div className="auth-sub">{tr("authSub")}</div>
+        <div className="auth-logo">kko<span>money</span></div>
+        <div className="auth-sub">내 돈을 귀엽게 관리해요 💗</div>
 
         <div className="auth-card">
-          <div className="auth-title">{tr("login")}</div>
+          <div className="auth-title">로그인</div>
 
           <div className="form-group">
-            <label className="form-label">{tr("email")}</label>
+            <label className="form-label">이메일</label>
             <input className="form-input" value={email} onChange={e => setEmail(e.target.value)} />
           </div>
 
           <div className="form-group">
-            <label className="form-label">{tr("password")}</label>
+            <label className="form-label">비밀번호</label>
             <input className="form-input" type="password" value={password} onChange={e => setPassword(e.target.value)} />
           </div>
 
-          <button className="auth-btn" onClick={login}>{tr("login")}</button>
-          <button className="auth-btn secondary" onClick={signup}>{tr("signup")}</button>
+          <button className="auth-btn" onClick={login}>로그인</button>
+          <button className="auth-btn secondary" onClick={signup}>회원가입</button>
         </div>
       </div>
     );
@@ -1403,17 +1315,17 @@ export default function App() {
           <div className="kko-popup-emoji">{popup.emoji}</div>
           <div className="kko-popup-title">{popup.title}</div>
           <div className="kko-popup-message">{popup.message}</div>
-          <button className="kko-popup-btn" onClick={closePopup}>{tr("confirm")}</button>
+          <button className="kko-popup-btn" onClick={closePopup}>확인</button>
         </div>
       </div>
     )}
 
     <div className="desktop-wrap">
       <aside className="sidebar">
-        <div className="logo">kko<span>{tr("money")}</span></div>
+        <div className="logo">kko<span>money</span></div>
 
         <div className="nav-section">
-          <div className="nav-section-title">{tr("main")}</div>
+          <div className="nav-section-title">main</div>
           {[
             ["home", "🏠", "home"],
             ["tx", "🧾", "tx"],
@@ -1427,7 +1339,7 @@ export default function App() {
         </div>
 
         <div className="nav-section">
-          <div className="nav-section-title">{tr("money")}</div>
+          <div className="nav-section-title">money</div>
           {[
             ["budget", "💗", "budget"],
             ["saving", "🐷", "saving"],
@@ -1443,14 +1355,14 @@ export default function App() {
         </div>
 
         <div className="nav-section nav-bottom">
-          <div className="nav-section-title">{tr("system")}</div>
+          <div className="nav-section-title">system</div>
           <button className={`nav-btn ${tab === "settings" ? "active" : ""}`} onClick={() => setTab("settings")}>
             <span className="nav-ico">⚙️</span>
-            <span>{tr("settings")}</span>
+            <span>settings</span>
           </button>
           <button className="nav-btn logout-btn" onClick={logout}>
             <span className="nav-ico">🚪</span>
-            <span>{tr("logout")}</span>
+            <span>logout</span>
           </button>
         </div>
       </aside>
@@ -1459,12 +1371,12 @@ export default function App() {
         {tab === "home" && (
           <>
             <section className="banner">
-              <div className="banner-lbl">{tr("remainingBudget")}</div>
+              <div className="banner-lbl">remainingBudget</div>
               <div className="banner-main">{won(income - expense)}</div>
               <div className="banner-row">
-                <div className="banner-mini">{tr("income")}<span>{won(income)}</span></div>
-                <div className="banner-mini">{tr("expense")}<span>{won(expense)}</span></div>
-                <div className="banner-mini">{tr("transfer")}<span>{tr("transferExcluded")}</span></div>
+                <div className="banner-mini">income<span>{won(income)}</span></div>
+                <div className="banner-mini">expense<span>{won(expense)}</span></div>
+                <div className="banner-mini">transfer<span>transferExcluded</span></div>
               </div>
             </section>
 
@@ -1473,33 +1385,33 @@ export default function App() {
 
               <div className="type-toggle">
                 <button className={`type-btn ${type === "expense" ? "active-expense" : ""}`} onClick={() => {setType("expense"); setCategory("식비");}}>
-                  {tr("expenseButton")}
+                  expenseButton
                 </button>
                 <button className={`type-btn ${type === "income" ? "active-income" : ""}`} onClick={() => {setType("income"); setCategory("월급");}}>
-                  {tr("incomeButton")}
+                  incomeButton
                 </button>
               </div>
 
               <div className="form-group">
-                <label className="form-label">{tr("amount")}</label>
+                <label className="form-label">amount</label>
                 <input className="form-input" type="text" value={amount} onChange={e => setAmount(comma(e.target.value))} />
               </div>
 
               <div className="form-group">
-                <label className="form-label">{tr("memo")}</label>
+                <label className="form-label">memo</label>
                 <input className="form-input" value={name} onChange={e => setName(e.target.value)} />
               </div>
 
               <div className="form-group">
-                <label className="form-label">{tr("category")}</label>
+                <label className="form-label">category</label>
                 <select className="form-select" value={category} onChange={e => setCategory(e.target.value)}>
                   {cats.map(c => <option key={c} value={c}>{catLabel(c)}</option>)}
-                  <option value="이체">{tr("transfer")}</option>
+                  <option value="이체">transfer</option>
                 </select>
               </div>
 
               <div className="form-group">
-                <label className="form-label">{tr("moneyType")}</label>
+                <label className="form-label">moneyType</label>
                 <select className="form-select" value={moneyType} onChange={e => setMoneyType(e.target.value)}>
                   {moneyTypes.map(mt => <option key={mt} value={mt}>{moneyTypeLabel(mt)}</option>)}
                 </select>
@@ -1507,20 +1419,20 @@ export default function App() {
 
               {category === "이체" && (
                 <div className="form-group">
-                  <label className="form-label">{tr("transferTo")}</label>
+                  <label className="form-label">이체 도착 유형</label>
                   <select className="form-select" value={transferTo} onChange={e => setTransferTo(e.target.value)}>
                     {moneyTypes.map(mt => <option key={mt} value={mt}>{moneyTypeLabel(mt)}</option>)}
                   </select>
-                  <div className="hint">{tr("transferHint")}</div>
+                  <div className="hint">계좌/카드/저축/투자 간 이동은 수입·지출 합계에 포함되지 않아요.</div>
                 </div>
               )}
 
               <div className="form-group">
-                <label className="form-label">{tr("repeat")}</label>
+                <label className="form-label">repeat</label>
                 <select className="form-select" value={repeat} onChange={e => setRepeat(e.target.value)}>
-                  <option value="none">{tr("noRepeat")}</option>
-                  <option value="monthly">{tr("monthlyRepeat")}</option>
-                  <option value="weekly">{tr("weeklyRepeat")}</option>
+                  <option value="none">noRepeat</option>
+                  <option value="monthly">monthlyRepeat</option>
+                  <option value="weekly">weeklyRepeat</option>
                 </select>
               </div>
 
@@ -1530,66 +1442,58 @@ export default function App() {
                 </button>
                 {editingTxId && (
                   <button className="btn btn-secondary" onClick={cancelTxEdit}>
-                    {tr("cancel")}
+                    cancel
                   </button>
                 )}
               </div>
             </section>
 
             <section className="card">
-              <div className="card-title">{tr("typeSummary")}</div>
+              <div className="card-title">typeSummary</div>
               <div className="grid4">
                 {typeSummary.map(row => (
                   <div className="sum-card" key={row.type}>
-                    <div className="sum-lbl">{moneyTypeLabel(row.type)}</div>
+                    <div className="sum-lbl">{row.type}</div>
                     <div className="sum-val income">+{won(row.income + row.transferIn)}</div>
                     <div className="sum-val expense">-{won(row.expense + row.transferOut)}</div>
                   </div>
                 ))}
               </div>
-              <div className="hint">{tr("typeSummaryHint")}</div>
+              <div className="hint">typeSummaryHint</div>
             </section>
 
             <section className="card">
-              <div className="card-title">{tr("excel")}</div>
-              <label className="file-upload-ui">
-                <input type="file" accept=".xlsx,.xls,.csv" onChange={handleExcelUpload} />
-                <span className="file-upload-btn">{language === "en" ? "Choose file" : "파일 선택"}</span>
-                <span className="file-upload-text">{language === "en" ? "No file selected" : "선택된 파일 없음"}</span>
-              </label>
-              <div className="hint">{tr("excelHint")}</div>
+              <div className="card-title">excel</div>
+              <input className="form-input" type="file" accept=".xlsx,.xls,.csv" onChange={handleExcelUpload} />
+              <div className="hint">excelHint</div>
             </section>
           </>
         )}
 
         {tab === "tx" && (
           <section className="card">
-            <div className="card-title">{tr("txList")}</div>
+            <div className="card-title">txList</div>
 
-            <label className="file-upload-ui">
-                <input type="file" accept=".xlsx,.xls,.csv" onChange={handleExcelUpload} />
-                <span className="file-upload-btn">{language === "en" ? "Choose file" : "파일 선택"}</span>
-                <span className="file-upload-text">{language === "en" ? "No file selected" : "선택된 파일 없음"}</span>
-              </label>
+            <input className="form-input" type="file" accept=".xlsx,.xls,.csv" onChange={handleExcelUpload} />
 
             <div className="grid3">
-              <div className="sum-card"><div className="sum-lbl">{tr("income")}</div><div className="sum-val income">{won(income)}</div></div>
-              <div className="sum-card"><div className="sum-lbl">{tr("expense")}</div><div className="sum-val expense">{won(expense)}</div></div>
-              <div className="sum-card"><div className="sum-lbl">{tr("balance")}</div><div className="sum-val">{won(income - expense)}</div></div>
+              <div className="sum-card"><div className="sum-lbl">income</div><div className="sum-val income">{won(income)}</div></div>
+              <div className="sum-card"><div className="sum-lbl">expense</div><div className="sum-val expense">{won(expense)}</div></div>
+              <div className="sum-card"><div className="sum-lbl">balance</div><div className="sum-val">{won(income - expense)}</div></div>
             </div>
 
             <div className="tx-list">
-              {txs.length === 0 ? <div className="empty">{tr("noTx")}</div> : txs.map(t => (
+              {txs.length === 0 ? <div className="empty">아직 내역이 없어요</div> : txs.map(t => (
                 <div className="tx-row" key={t.id}>
                   <div className="tx-info">
                     <div className="tx-name">{t.name}</div>
                     <div className="tx-meta">
                       {t.date} · {catLabel(t.category)} · {moneyTypeLabel(t.moneyType || "계좌")}
                       {t.type === "transfer" ? ` → ${moneyTypeLabel(t.transferTo)}` : ""}
-                      {t.repeat !== "none" ? ` · ${t.repeat === "monthly" ? tr("repeatMonthly") : tr("repeatWeekly")}` : ""}
+                      {t.repeat !== "none" ? ` · ${t.repeat === "monthly" ? "매월 반복" : "매주 반복"}` : ""}
                     </div>
                   </div>
-                  <div className={`tx-amt ${t.type}`}>{t.type === "transfer" ? `${tr("txTransferPrefix")} ` : t.type === "income" ? "+" : "-"}{won(t.amount)}</div>
+                  <div className={`tx-amt ${t.type}`}>{t.type === "transfer" ? "이체 " : t.type === "income" ? "+" : "-"}{won(t.amount)}</div>
                   <div className="tx-actions">
                     <button onClick={() => editTx(t)}>{tr("edit")}</button>
                     <button onClick={() => deleteTx(t.id)}>{tr("delete")}</button>
@@ -1603,7 +1507,7 @@ export default function App() {
         {tab === "budget" && (
           <>
             <section className="banner">
-              <div className="banner-lbl">{tr("budgetUsage")}</div>
+              <div className="banner-lbl">budgetUsage</div>
               <div className="banner-main">
                 {(() => {
                   const budgetTotal = budgets.reduce((sum,b) => sum + Number(b.amount), 0);
@@ -1616,17 +1520,17 @@ export default function App() {
                 })()}
               </div>
               <div className="banner-row">
-                <div className="banner-mini">{tr("totalBudget")}<span>{won(budgets.reduce((s,b) => s + b.amount, 0))}</span></div>
-                <div className="banner-mini">{tr("used")}<span>{won(currentMonthExpenseByBudget)}</span></div>
-                <div className="banner-mini">{tr("carryOver")}<span>{won(budgetCarryOver)}</span></div>
-                <div className="banner-mini">{tr("nextBudget")}<span>{won(nextMonthBudgetTotal)}</span></div>
+                <div className="banner-mini">totalBudget<span>{won(budgets.reduce((s,b) => s + b.amount, 0))}</span></div>
+                <div className="banner-mini">used<span>{won(currentMonthExpenseByBudget)}</span></div>
+                <div className="banner-mini">carryOver<span>{won(budgetCarryOver)}</span></div>
+                <div className="banner-mini">nextBudget<span>{won(nextMonthBudgetTotal)}</span></div>
               </div>
             </section>
 
             <section className="card">
-              <div className="card-title">{tr("budgetByCategory")}</div>
+              <div className="card-title">budgetByCategory</div>
               <select className="form-select" value={budgetCat} onChange={e => setBudgetCat(e.target.value)}>
-                {CATS_EXP.map(c => <option key={c} value={c}>{catLabel(c)}</option>)}
+                {CATS_EXP.map(c => <option key={c}>{c}</option>)}
               </select>
               <input className="form-input" type="number" placeholder={tr("monthlyBudget")} value={budgetAmount} onChange={e => setBudgetAmount(e.target.value)} />
               <button className="btn btn-primary" onClick={saveBudget}>{tr("saveBudget")}</button>
@@ -1637,7 +1541,7 @@ export default function App() {
                   const pct = Math.min(100, Math.round(used / b.amount * 100));
                   return (
                     <div className="budget-item" key={b.category}>
-                      <div className="budget-top"><b>{catLabel(b.category)}</b><span>{won(used)} / {won(b.amount)}</span></div>
+                      <div className="budget-top"><b>{b.category}</b><span>{won(used)} / {won(b.amount)}</span></div>
                       <div className="bar-bg"><div className="bar-fill" style={{ width: pct + "%" }} /></div>
                     </div>
                   );
@@ -1651,34 +1555,34 @@ export default function App() {
         {tab === "saving" && (
           <>
             <section className="banner saving-banner">
-              <div className="banner-lbl">{tr("savingProgress")}</div>
+              <div className="banner-lbl">저축 목표 달성률</div>
               <div className="banner-main">{totalSavingPct}%</div>
               <div className="banner-row">
-                <div className="banner-mini">{tr("totalTarget")}<span>{won(totalSavingTarget)}</span></div>
-                <div className="banner-mini">{tr("totalCurrent")}<span>{won(totalSavingCurrent)}</span></div>
-                <div className="banner-mini">{tr("leftAmount")}<span>{won(Math.max(0, totalSavingTarget - totalSavingCurrent))}</span></div>
+                <div className="banner-mini">목표 합계<span>{won(totalSavingTarget)}</span></div>
+                <div className="banner-mini">현재 합계<span>{won(totalSavingCurrent)}</span></div>
+                <div className="banner-mini">남은 금액<span>{won(Math.max(0, totalSavingTarget - totalSavingCurrent))}</span></div>
               </div>
             </section>
 
             <section className="card">
-              <div className="card-title">{editingSavingId ? tr("editSaving") : tr("addSaving")}</div>
+              <div className="card-title">{editingSavingId ? "저축 목표 edit" : "저축 목표 add"}</div>
 
               <input
                 className="form-input"
-                placeholder={tr("savingNamePlaceholder")}
+                placeholder="목표명 예: 비상금, 여행 적금"
                 value={savingName}
                 onChange={e => setSavingName(e.target.value)}
               />
               <input
                 className="form-input"
-                placeholder={tr("savingTargetPlaceholder")}
+                placeholder="목표 금액"
                 type="number"
                 value={savingTarget}
                 onChange={e => setSavingTarget(e.target.value)}
               />
               <input
                 className="form-input"
-                placeholder={tr("savingCurrentPlaceholder")}
+                placeholder="현재 모은 금액"
                 type="number"
                 value={savingCurrent}
                 onChange={e => setSavingCurrent(e.target.value)}
@@ -1686,21 +1590,21 @@ export default function App() {
 
               <div className="saving-button-row">
                 <button className="btn btn-primary" onClick={saveSaving}>
-                  {editingSavingId ? tr("updateSave") : tr("addSaving")}
+                  {editingSavingId ? "edit 저장" : "저축 목표 add"}
                 </button>
                 {editingSavingId && (
                   <button className="btn btn-secondary" onClick={cancelSavingEdit}>
-                    {tr("cancel")}
+                    cancel
                   </button>
                 )}
               </div>
             </section>
 
             <section className="card">
-              <div className="card-title">{tr("savingStatus")}</div>
+              <div className="card-title">저축 현황</div>
 
               {savings.length === 0 ? (
-                <div className="empty">{tr("noSaving")}</div>
+                <div className="empty">저축 목표가 없어요</div>
               ) : (
                 <div className="saving-grid">
                   {savings.map(sv => {
@@ -1724,12 +1628,12 @@ export default function App() {
                         </div>
 
                         <div className="saving-detail">
-                          <span>{tr("leftAmount")}</span>
+                          <span>남은 금액</span>
                           <b>{won(left)}</b>
                         </div>
 
                         <div className="saving-detail">
-                          <span>{tr("expectedDate")}</span>
+                          <span>예상 달성일</span>
                           <b>{getSavingPrediction(sv)}</b>
                         </div>
 
@@ -1749,16 +1653,16 @@ export default function App() {
         {tab === "assets" && (
           <>
             <section className="banner asset-banner">
-              <div className="banner-lbl">{tr("totalAccountBalance")}</div>
+              <div className="banner-lbl">totalAccountBalance</div>
               <div className="banner-main">{won(totalAccountBalance)}</div>
               <div className="banner-row">
-                <div className="banner-mini">{tr("accountCount")}<span>{accounts.length}</span></div>
-                <div className="banner-mini">{tr("cardCount")}<span>{cards.length}</span></div>
+                <div className="banner-mini">accountCount<span>{accounts.length}</span></div>
+                <div className="banner-mini">cardCount<span>{cards.length}</span></div>
               </div>
             </section>
 
             <section className="card">
-              <div className="card-title">{tr("accountBalanceManage")}</div>
+              <div className="card-title">accountBalanceManage</div>
               <input className="form-input" placeholder={tr("accountNamePlaceholder")} value={accountName} onChange={e => setAccountName(e.target.value)} />
               <input className="form-input" placeholder={tr("currentBalance")} type="number" value={accountBalance} onChange={e => setAccountBalance(e.target.value)} />
               <button className="btn btn-primary asset-add-btn" onClick={addAccount}>{tr("addAccount")}</button>
@@ -1777,23 +1681,23 @@ export default function App() {
             </section>
 
             <section className="card">
-              <div className="card-title">{tr("assetTrend")}</div>
+              <div className="card-title">assetTrend</div>
               <div className="chart-box wide">
                 <Line
                   data={{
                     labels: assetTrendLabels,
                     datasets: [{
-                      label: tr("expectedAssets"),
+                      label: "예상 자산",
                       data: assetTrendData,
                     }],
                   }}
                 />
               </div>
-              <div className="hint">{tr("assetTrendHint")}</div>
+              <div className="hint">assetTrendHint</div>
             </section>
 
             <section className="card">
-              <div className="card-title">{tr("cardPaymentManage")}</div>
+              <div className="card-title">cardPaymentManage</div>
               <input className="form-input" placeholder={tr("cardNamePlaceholder")} value={cardName} onChange={e => setCardName(e.target.value)} />
               <input className="form-input" placeholder={tr("paymentDayPlaceholder")} type="number" value={cardPayDay} onChange={e => setCardPayDay(e.target.value)} />
               <button className="btn btn-primary asset-add-btn" onClick={addCard}>{tr("addCard")}</button>
@@ -1803,7 +1707,7 @@ export default function App() {
                   <div className="asset-item" key={c.id}>
                     <div>
                       <b>{c.name}</b>
-                      <span>{`${tr("monthlyDay")} ${c.payDay} · ${getCardDDay(c.payDay)}`}</span>
+                      <span>{language === "en" ? `Monthly day ${c.payDay} · ${getCardDDay(c.payDay)}` : `매월 ${c.payDay}일 · ${getCardDDay(c.payDay)}`}</span>
                     </div>
                     <button onClick={() => deleteCard(c.id)}>{tr("delete")}</button>
                   </div>
@@ -1816,15 +1720,15 @@ export default function App() {
         {tab === "subs" && (
           <>
             <section className="banner sub-banner">
-              <div className="banner-lbl">{tr("monthlySubscriptions")}</div>
+              <div className="banner-lbl">monthlySubscriptions</div>
               <div className="banner-main">{won(totalSubMonthly)}</div>
               <div className="banner-row">
-                <div className="banner-mini">{tr("subCount")}<span>{subs.length}</span></div>
+                <div className="banner-mini">subCount<span>{subs.length}</span></div>
               </div>
             </section>
 
             <section className="card">
-              <div className="card-title">{tr("subManage")}</div>
+              <div className="card-title">subManage</div>
               <input className="form-input" placeholder={tr("subNamePlaceholder")} value={subName} onChange={e => setSubName(e.target.value)} />
               <input className="form-input" placeholder={tr("subAmountPlaceholder")} type="number" value={subAmount} onChange={e => setSubAmount(e.target.value)} />
               <input className="form-input" placeholder={tr("subDayPlaceholder")} type="number" value={subDay} onChange={e => setSubDay(e.target.value)} />
@@ -1835,7 +1739,7 @@ export default function App() {
                   <div className="asset-item" key={su.id}>
                     <div>
                       <b>{su.name}</b>
-                      <span>{`${won(su.amount)} · ${tr("monthlyDay")} ${su.day}`}</span>
+                      <span>{language === "en" ? `${won(su.amount)} · Monthly day ${su.day}` : `${won(su.amount)} · 매월 ${su.day}일`}</span>
                     </div>
                     <button onClick={() => deleteSub(su.id)}>{tr("delete")}</button>
                   </div>
@@ -1854,21 +1758,21 @@ export default function App() {
             <input className="form-input" placeholder={tr("ratePlaceholder")} type="number" value={loanRate} onChange={e => setLoanRate(e.target.value)} />
             <input className="form-input" placeholder={tr("termPlaceholder")} type="number" value={loanTerm} onChange={e => setLoanTerm(e.target.value)} />
 
-            <label className="form-label loan-date-label">{tr("loanStartDate")}</label>
+            <label className="form-label loan-date-label">loanStartDate</label>
             <input className="form-input" type="date" value={loanStartDate} onChange={e => setLoanStartDate(e.target.value)} />
 
             <select className="form-select" value={loanType} onChange={e => setLoanType(e.target.value)}>
-              <option value="equal_payment">{tr("equalPayment")}</option>
-              <option value="equal_principal">{tr("equalPrincipal")}</option>
+              <option value="equal_payment">equalPayment</option>
+              <option value="equal_principal">equalPrincipal</option>
             </select>
 
             <div className="loan-button-row">
               <button className="btn btn-primary" onClick={saveLoan}>
-                {editingLoanId ? tr("updateSave") : tr("addLoan")}
+                {editingLoanId ? "edit 저장" : "대출 add"}
               </button>
               {editingLoanId && (
                 <button className="btn btn-secondary" onClick={cancelLoanEdit}>
-                  {tr("cancel")}
+                  cancel
                 </button>
               )}
             </div>
@@ -1882,7 +1786,7 @@ export default function App() {
                     <div className="loan-head">
                       <div>
                         <h3>{l.name}</h3>
-                        <p>{l.type === "equal_payment" ? tr("loanTypeEqualPayment") : tr("loanTypeEqualPrincipal")} · {tr("annualRateShort")} {l.rate}% · {l.term}{tr("monthsUnit")}</p>
+                        <p>{l.type === "equal_payment" ? "원리금균등" : "원금균등"} · 연 {l.rate}% · {l.term}개월</p>
                       </div>
                       <div className="loan-progress-num">{summary.progress}%</div>
                     </div>
@@ -1893,31 +1797,35 @@ export default function App() {
 
                     <div className="loan-info-grid loan-info-grid-auto">
                       <div>
-                        <span>{tr("loanPrincipal")}</span>
+                        <span>대출 원금</span>
                         <b>{won(l.principal)}</b>
                       </div>
                       <div>
-                        <span>{tr("paidAmount")}</span>
+                        <span>누적 상환</span>
                         <b>{won(summary.paidAmount)}</b>
                       </div>
                       <div>
-                        <span>{tr("txApplied")}</span>
+                        <span>입출금 반영</span>
                         <b>{won(getLoanTxAmount(l))}</b>
                       </div>
                       <div>
-                        <span>{tr("remainingLoan")}</span>
+                        <span>남은 잔금</span>
                         <b>{won(summary.remainingAmount)}</b>
                       </div>
                       <div>
-                        <span>{tr("monthlyPayment")}</span>
+                        <span>월 상환액</span>
                         <b>{won(summary.monthlyPayment)}</b>
                       </div>
                     </div>
 
                     <div className="loan-detail">
-                      <div dangerouslySetInnerHTML={{__html: fmt("loanPaidSentence", { total: summary.totalMonths, paid: `<b>${summary.paidMonths}</b>` })}} />
-                      <div>{summary.yearsLeft > 0 ? fmt("loanRemainingYearSentence", { months: summary.remainingMonths, years: summary.yearsLeft, leftMonths: summary.monthsLeft }) : fmt("loanRemainingSentence", { months: summary.remainingMonths })}</div>
-                      <div>{tr("startDate")}: {l.startDate || tr("notEntered")}</div>
+                      <div>총 {summary.totalMonths}개월 중 <b>{summary.paidMonths}개월치</b> 갚았어요.</div>
+                      <div>
+                        앞으로 <b>{summary.remainingMonths}개월</b>
+                        {summary.yearsLeft > 0 && <> · 약 <b>{summary.yearsLeft}년 {summary.monthsLeft}개월</b></>}
+                        남았어요.
+                      </div>
+                      <div>시작일: {l.startDate || "미입력"}</div>
                     </div>
 
                     <div className="loan-card-actions">
@@ -1934,7 +1842,7 @@ export default function App() {
         {tab === "settings" && (
           <section className="card">
             <div className="language-setting-card">
-              <div className="card-title">{tr("language")}</div>
+              <div className="card-title">language</div>
               <select
                 className="form-select"
                 value={language}
@@ -1949,7 +1857,7 @@ export default function App() {
             </div>
 
             <div className="currency-setting-card">
-              <div className="card-title">{tr("currency")}</div>
+              <div className="card-title">currency</div>
               <select
                 className="form-select"
                 value={currency}
@@ -1964,10 +1872,10 @@ export default function App() {
               </select>
             </div>
 
-            <div className="card-title">{tr("moneyTypeEditorTitle")}</div>
+            <div className="card-title">settings · 출입금 유형 편집</div>
 
             <div className="form-group">
-              <label className="form-label">{tr("newTypeAdd")}</label>
+              <label className="form-label">newTypeAdd</label>
               <div className="settings-row">
                 <input
                   className="form-input"
@@ -1979,8 +1887,8 @@ export default function App() {
                   className="btn btn-primary"
                   onClick={() => {
                     const v = newMoneyType.trim();
-                    if (!v) return alert(tr("addTypeRequired"));
-                    if (moneyTypes.includes(v)) return alert(tr("duplicateType"));
+                    if (!v) return alert("add할 유형명을 입력해주세요");
+                    if (moneyTypes.includes(v)) return alert("이미 있는 유형이에요");
                     const next = [...moneyTypes, v];
                     setMoneyTypes(next);
                     localStorage.setItem("moneyTypes", JSON.stringify(next));
@@ -1999,7 +1907,7 @@ export default function App() {
                   <button
                     className="small-delete"
                     onClick={() => {
-                      if (moneyTypes.length <= 1) return alert(tr("minTypeRequired"));
+                      if (moneyTypes.length <= 1) return alert("유형은 최소 1개 필요해요");
                       const next = moneyTypes.filter(x => x !== mt);
                       setMoneyTypes(next);
                       localStorage.setItem("moneyTypes", JSON.stringify(next));
@@ -2013,7 +1921,7 @@ export default function App() {
               ))}
             </div>
 
-            <div className="hint">{tr("moneyTypeHint")}</div>
+            <div className="hint">계좌, 카드, 저축, 투자 외에 비상금/CMA/현금 같은 유형을 add할 수 있어요.</div>
           </section>
         )}
 
@@ -2022,23 +1930,23 @@ export default function App() {
             <div className="chart-month-head">
               <button className="month-arrow" onClick={() => moveChartMonth(-1)}>‹</button>
               <div>
-                <div className="card-title">{tr("chart")}</div>
-                <div className="chart-month-title">{fmt("chartMonthTitle", { year: chartYear, month: chartMonth + 1 })}</div>
+                <div className="card-title">chart</div>
+                <div className="chart-month-title">{chartYear}년 {chartMonth + 1}월</div>
               </div>
               <button className="month-arrow" onClick={() => moveChartMonth(1)}>›</button>
             </div>
 
             <div className="grid3">
               <div className="sum-card">
-                <div className="sum-lbl">{tr("income")}</div>
+                <div className="sum-lbl">income</div>
                 <div className="sum-val income">{won(chartMonthIncome)}</div>
               </div>
               <div className="sum-card">
-                <div className="sum-lbl">{tr("expense")}</div>
+                <div className="sum-lbl">expense</div>
                 <div className="sum-val expense">{won(chartMonthExpense)}</div>
               </div>
               <div className="sum-card">
-                <div className="sum-lbl">{tr("balance")}</div>
+                <div className="sum-lbl">balance</div>
                 <div className="sum-val">{won(chartMonthIncome - chartMonthExpense)}</div>
               </div>
             </div>
@@ -2047,7 +1955,7 @@ export default function App() {
               <div className="chart-box">
                 <div className="card-title">income category</div>
                 {chartIncomeMap.length === 0 ? (
-                  <div className="empty">{tr("noIncomeData")}</div>
+                  <div className="empty">{language === "en" ? "No income data this month" : "이 달의 수입 데이터가 없어요"}</div>
                 ) : (
                   <Doughnut
                     data={{
@@ -2064,7 +1972,7 @@ export default function App() {
               <div className="chart-box">
                 <div className="card-title">expense category</div>
                 {chartExpenseMap.length === 0 ? (
-                  <div className="empty">{tr("noExpenseData")}</div>
+                  <div className="empty">{language === "en" ? "No expense data this month" : "이 달의 지출 데이터가 없어요"}</div>
                 ) : (
                   <Doughnut
                     data={{
@@ -2085,7 +1993,7 @@ export default function App() {
                 data={{
                   labels: [tr("income"), tr("expense"), tr("balance")],
                   datasets: [{
-                    label: fmt("chartDatasetMonth", { year: chartYear, month: chartMonth + 1 }),
+                    label: `${chartYear}년 ${chartMonth + 1}월`,
                     data: [chartMonthIncome, chartMonthExpense, chartMonthIncome - chartMonthExpense],
                   }],
                 }}
