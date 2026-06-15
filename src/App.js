@@ -1373,7 +1373,7 @@ export default function App() {
   if (!user) {
     return (
       <div className="auth-screen">
-        <div className="auth-logo">kko<span>{tr("money")}</span></div>
+        <div className="auth-logo">kko<span>Money</span></div>
         <div className="auth-sub">{tr("authSub")}</div>
 
         <div className="auth-card">
@@ -1411,7 +1411,7 @@ export default function App() {
 
     <div className="desktop-wrap">
       <aside className="sidebar">
-        <div className="logo">kko<span>{tr("money")}</span></div>
+        <div className="logo">kko<span>Money</span></div>
 
         <div className="nav-section">
           <div className="nav-section-title">{tr("main")}</div>
@@ -2018,8 +2018,8 @@ export default function App() {
                   localStorage.setItem("language", e.target.value);
                 }}
               >
-                <option value="ko">korean</option>
-                <option value="en">english</option>
+                <option value="ko">{tr("korean")}</option>
+                <option value="en">{tr("english")}</option>
               </select>
             </div>
 
@@ -2062,7 +2062,7 @@ export default function App() {
                     setNewMoneyType("");
                   }}
                 >
-                  add
+                  {tr("add")}
                 </button>
               </div>
             </div>
@@ -2082,7 +2082,7 @@ export default function App() {
                       if (transferTo === mt) setTransferTo(next[0]);
                     }}
                   >
-                    delete
+                    {tr("delete")}
                   </button>
                 </div>
               ))}
