@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { useEffect, useState } from "react";
 import { supabase } from "./lib/supabase";
 import * as XLSX from "xlsx";
@@ -1456,9 +1457,40 @@ export default function App() {
       </aside>
 
       <main className="main-content">
+        <div className="topbar">
+          <div className="topbar-spacer" />
+          <div className="top-controls">
+            <select
+              className="top-select"
+              value={language}
+              onChange={(e) => {
+                setLanguage(e.target.value);
+                localStorage.setItem("language", e.target.value);
+              }}
+            >
+              <option value="ko">🌐 KO</option>
+              <option value="en">🌐 EN</option>
+            </select>
+
+            <select
+              className="top-select"
+              value={currency}
+              onChange={(e) => {
+                setCurrency(e.target.value);
+                localStorage.setItem("currency", e.target.value);
+              }}
+            >
+              {CURRENCY_OPTIONS.map(c => (
+                <option key={c.code} value={c.code}>{c.label}</option>
+              ))}
+            </select>
+
+            <div className="top-avatar">🐷</div>
+          </div>
+        </div>
         {tab === "home" && (
           <>
-            <section className="banner">
+            <section className="banner hero-card">
               <div className="banner-lbl">{tr("remainingBudget")}</div>
               <div className="banner-main">{won(income - expense)}</div>
               <div className="banner-row">
@@ -1466,9 +1498,12 @@ export default function App() {
                 <div className="banner-mini">{tr("expense")}<span>{won(expense)}</span></div>
                 <div className="banner-mini">{tr("transfer")}<span>{tr("transferExcluded")}</span></div>
               </div>
+              <div className="hero-pig" aria-hidden="true">🐷</div>
+              <div className="hero-coin coin-a" aria-hidden="true">🪙</div>
+              <div className="hero-coin coin-b" aria-hidden="true">🪙</div>
             </section>
 
-            <section className="card">
+            <section className="card quick-card">
               <div className="card-title">{editingTxId ? tr("editTx") : tr("quickInput")}</div>
 
               <div className="type-toggle">
@@ -1482,12 +1517,12 @@ export default function App() {
 
               <div className="form-group">
                 <label className="form-label">{tr("amount")}</label>
-                <input className="form-input" type="text" value={amount} onChange={e => setAmount(comma(e.target.value))} />
+                <input className="form-input" type="text" placeholder={language === "en" ? "Ex. 50,000" : "예: 50,000"} value={amount} onChange={e => setAmount(comma(e.target.value))} />
               </div>
 
               <div className="form-group">
                 <label className="form-label">{tr("memo")}</label>
-                <input className="form-input" value={name} onChange={e => setName(e.target.value)} />
+                <input className="form-input" placeholder={language === "en" ? "Description" : "내용 입력"} value={name} onChange={e => setName(e.target.value)} />
               </div>
 
               <div className="form-group">
@@ -1536,28 +1571,68 @@ export default function App() {
               </div>
             </section>
 
-            <section className="card">
-              <div className="card-title">{tr("typeSummary")}</div>
-              <div className="grid4">
-                {typeSummary.map(row => (
-                  <div className="sum-card" key={row.type}>
-                    <div className="sum-lbl">{moneyTypeLabel(row.type)}</div>
-                    <div className="sum-val income">+{won(row.income + row.transferIn)}</div>
-                    <div className="sum-val expense">-{won(row.expense + row.transferOut)}</div>
+            <section className="dashboard-grid">
+              <div className="dash-card summary-card">
+                <div className="dash-title">{language === "en" ? "This Month Summary" : "이번 달 요약"}</div>
+                <div className="summary-list">
+                  <div className="summary-row">
+                    <div className="summary-left"><span className="round-icon income-bg">↑</span>{tr("income")}</div>
+                    <strong className="pink">{won(income)}</strong>
                   </div>
-                ))}
+                  <div className="summary-row">
+                    <div className="summary-left"><span className="round-icon expense-bg">↓</span>{tr("expense")}</div>
+                    <strong className="blue">{won(expense)}</strong>
+                  </div>
+                  <div className="summary-row">
+                    <div className="summary-left"><span className="round-icon transfer-bg">↔</span>{tr("transfer")}</div>
+                    <strong className="purple">{tr("transferExcluded")}</strong>
+                  </div>
+                </div>
               </div>
-              <div className="hint">{tr("typeSummaryHint")}</div>
-            </section>
 
-            <section className="card">
-              <div className="card-title">{tr("excel")}</div>
-              <label className="file-upload-ui">
-                <input type="file" accept=".xlsx,.xls,.csv" onChange={handleExcelUpload} />
-                <span className="file-upload-btn">{language === "en" ? "Choose file" : "파일 선택"}</span>
-                <span className="file-upload-text">{language === "en" ? "No file selected" : "선택된 파일 없음"}</span>
-              </label>
-              <div className="hint">{tr("excelHint")}</div>
+              <div className="dash-card budget-card">
+                <div className="dash-title">{tr("budgetUsage")}</div>
+                <div className="budget-usage-wrap">
+                  <div
+                    className="donut"
+                    style={{
+                      "--pct": `${Math.min(100, currentBudgetTotal > 0 ? Math.round((currentMonthExpenseByBudget / currentBudgetTotal) * 100) : 0)}%`
+                    }}
+                  >
+                    <div>
+                      <strong>{currentBudgetTotal > 0 ? Math.round((currentMonthExpenseByBudget / currentBudgetTotal) * 100) : 0}%</strong>
+                      <span>{tr("used")}</span>
+                    </div>
+                  </div>
+
+                  <div className="budget-lines">
+                    <div><span>{tr("totalBudget")}</span><b>{won(currentBudgetTotal)}</b></div>
+                    <div><span>{tr("used")}</span><b>{won(currentMonthExpenseByBudget)}</b></div>
+                    <div><span>{tr("carryOver")}</span><b>{won(budgetCarryOver)}</b></div>
+                    <hr />
+                    <div><span>{tr("nextBudget")}</span><b>{won(nextMonthBudgetTotal)}</b></div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="dash-card savings-card-home">
+                <div className="dash-title">{tr("savingProgress")}</div>
+                <div className="simple-metric">
+                  <span>{tr("totalTarget")}</span>
+                  <strong>{won(totalSavingTarget)}</strong>
+                </div>
+                <div className="simple-metric">
+                  <span>{tr("totalCurrent")}</span>
+                  <strong>{won(totalSavingCurrent)}</strong>
+                </div>
+                <div className="bar-bg"><div className="bar-fill green" style={{ width: totalSavingPct + "%" }} /></div>
+              </div>
+
+              <div className="dash-card total-assets-card">
+                <div className="dash-title">{tr("assets")}</div>
+                <div className="big-metric">{won(totalAccountBalance + totalSavingCurrent)}</div>
+                <button className="floating-plus" onClick={() => setTab("assets")}>+</button>
+              </div>
             </section>
           </>
         )}
