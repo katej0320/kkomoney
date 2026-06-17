@@ -20,8 +20,12 @@ ChartJS.register(ArcElement, BarElement, LineElement, PointElement, CategoryScal
 const CATS_EXP = ["식비","카페","교통","쇼핑","의료","문화/여가","구독","통신","저축","대출상환","기타"];
 const CATS_INC = ["이월","월급","용돈","부업","이자","환급","기타수입"];
 
+// 통화 포맷용 모듈 변수 (Supabase user_settings에서 로드한 값으로 동기화).
+// localStorage를 쓰지 않으면서 won() 시그니처를 유지하기 위한 장치다.
+let activeCurrency = "KRW";
+
 function won(n) {
-  const currency = localStorage.getItem("currency") || "KRW";
+  const currency = activeCurrency;
   const option = CURRENCY_OPTIONS.find(c => c.code === currency) || CURRENCY_OPTIONS[0];
 
   return new Intl.NumberFormat(option.locale, {
@@ -134,6 +138,12 @@ const I18N = {
     expectedDate: "예상 달성일",
     unknownEstimate: "예상 불가",
 
+    balanceNav: "잔액",
+    balanceTitle: "계좌 유형별 잔액",
+    balanceTotal: "전체 잔액 합계",
+    balanceHint: "거래 내역에서 계좌 유형별로 자동 계산한 잔액이에요. (수입 + / 지출·이체 −)",
+    balanceEmpty: "아직 기입된 거래가 없어요. 거래를 추가하면 계좌 유형별 잔액이 표시돼요.",
+    balanceEntryUnit: "건",
     totalAccountBalance: "총 계좌 잔액",
     accountCount: "계좌 수",
     cardCount: "카드 수",
@@ -327,6 +337,12 @@ const I18N = {
     expectedDate: "Estimated completion",
     unknownEstimate: "Not enough data",
 
+    balanceNav: "Balances",
+    balanceTitle: "Balance by account type",
+    balanceTotal: "Total balance",
+    balanceHint: "Auto-calculated from your transactions per account type (income +, expense/transfer −).",
+    balanceEmpty: "No transactions recorded yet. Add transactions to see balances by account type.",
+    balanceEntryUnit: "",
     totalAccountBalance: "Total account balance",
     accountCount: "Accounts",
     cardCount: "Cards",
@@ -484,8 +500,8 @@ export default function App() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [popup, setPopup] = useState(null);
-  const [language, setLanguage] = useState(localStorage.getItem("language") || "ko");
-  const [currency, setCurrency] = useState(localStorage.getItem("currency") || "KRW");
+  const [language, setLanguage] = useState("ko");
+  const [currency, setCurrency] = useState("KRW");
   const tr = (key) => I18N[language]?.[key] || key;
   const ui = (ko, en) => (language === "en" ? en : ko);
   const fmt = (key, vars = {}) =>
@@ -541,9 +557,9 @@ export default function App() {
   const [txSort, setTxSort] = useState("latest");
   const [selectedTxIds, setSelectedTxIds] = useState([]);
   const [txs, setTxs] = useState([]);
-  const [accounts, setAccounts] = useState(() => JSON.parse(localStorage.getItem("accounts") || "[]"));
-  const [cards, setCards] = useState(() => JSON.parse(localStorage.getItem("cards") || "[]"));
-  const [subs, setSubs] = useState(() => JSON.parse(localStorage.getItem("subs") || "[]"));
+  const [accounts, setAccounts] = useState([]);
+  const [cards, setCards] = useState([]);
+  const [subs, setSubs] = useState([]);
 
   const [accountName, setAccountName] = useState("");
   const [accountBalance, setAccountBalance] = useState("");
@@ -562,10 +578,7 @@ export default function App() {
   const [category, setCategory] = useState("식비");
   const [moneyType, setMoneyType] = useState("계좌");
   const [transferTo, setTransferTo] = useState("카드");
-  const [moneyTypes, setMoneyTypes] = useState(() => {
-    const saved = localStorage.getItem("moneyTypes");
-    return saved ? JSON.parse(saved) : DEFAULT_MONEY_TYPES;
-  });
+  const [moneyTypes, setMoneyTypes] = useState(DEFAULT_MONEY_TYPES);
   const [newMoneyType, setNewMoneyType] = useState("");
   const [repeat, setRepeat] = useState("none");
 
@@ -603,6 +616,11 @@ export default function App() {
     return () => listener.subscription.unsubscribe();
   }, []);
 
+  // currency 상태를 won() 포매터가 읽는 모듈 변수와 동기화
+  useEffect(() => {
+    activeCurrency = currency;
+  }, [currency]);
+
   const login = async () => {
     if (!email || !password) return alert(tr("emailPasswordRequired"));
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
@@ -633,13 +651,25 @@ export default function App() {
   const loadUserData = async (currentUser) => {
     if (!currentUser) return;
 
-    const [{ data: txData }, { data: budgetData }, { data: savingData }, { data: loanData }] =
-      await Promise.all([
-        supabase.from("transactions").select("*").eq("user_id", currentUser.id).order("date", { ascending: false }),
-        supabase.from("budgets").select("*").eq("user_id", currentUser.id),
-        supabase.from("savings").select("*").eq("user_id", currentUser.id),
-        supabase.from("loans").select("*").eq("user_id", currentUser.id),
-      ]);
+    const [
+      { data: txData },
+      { data: budgetData },
+      { data: savingData },
+      { data: loanData },
+      { data: accountData },
+      { data: cardData },
+      { data: subData },
+      { data: settingsData },
+    ] = await Promise.all([
+      supabase.from("transactions").select("*").eq("user_id", currentUser.id).order("date", { ascending: false }),
+      supabase.from("budgets").select("*").eq("user_id", currentUser.id),
+      supabase.from("savings").select("*").eq("user_id", currentUser.id),
+      supabase.from("loans").select("*").eq("user_id", currentUser.id),
+      supabase.from("accounts").select("*").eq("user_id", currentUser.id).order("created_at", { ascending: true }),
+      supabase.from("cards").select("*").eq("user_id", currentUser.id).order("created_at", { ascending: true }),
+      supabase.from("subscriptions").select("*").eq("user_id", currentUser.id).order("created_at", { ascending: true }),
+      supabase.from("user_settings").select("*").eq("user_id", currentUser.id).maybeSingle(),
+    ]);
 
     setTxs((txData || []).map(t => {
       const transferMatch = t.memo && t.memo.startsWith("이체:")
@@ -684,64 +714,132 @@ export default function App() {
       type: l.type,
       memo: l.memo || "",
     })));
+
+    setAccounts((accountData || []).map(a => ({
+      id: a.id,
+      name: a.name,
+      balance: Number(a.balance || 0),
+    })));
+
+    setCards((cardData || []).map(c => ({
+      id: c.id,
+      name: c.name,
+      payDay: Number(c.pay_day || 1),
+    })));
+
+    setSubs((subData || []).map(s => ({
+      id: s.id,
+      name: s.name,
+      amount: Number(s.amount || 0),
+      day: Number(s.day || 1),
+    })));
+
+    // 설정(계좌 유형/통화/언어)은 user_settings 한 행에 보관. 없으면 기본값 유지.
+    if (settingsData) {
+      if (Array.isArray(settingsData.money_types) && settingsData.money_types.length) {
+        setMoneyTypes(settingsData.money_types);
+      }
+      if (settingsData.currency) setCurrency(settingsData.currency);
+      if (settingsData.language) setLanguage(settingsData.language);
+    }
   };
 
-  const saveLocal = (key, value) => {
-    localStorage.setItem(key, JSON.stringify(value));
+  // 계좌 유형/통화/언어 설정을 user_settings 테이블에 사용자별로 저장 (localStorage 대체)
+  const saveSettings = async (patch) => {
+    if (!user) return;
+    const { error } = await supabase
+      .from("user_settings")
+      .upsert(
+        { user_id: user.id, ...patch, updated_at: new Date().toISOString() },
+        { onConflict: "user_id" }
+      );
+    if (error) console.error("user_settings 저장 실패:", error.message);
   };
 
-  const addAccount = () => {
+  const addAccount = async () => {
     if (!accountName) return alert(tr("accountNameRequired"));
-    const next = [...accounts, { id: Date.now(), name: accountName, balance: Number(accountBalance || 0) }];
-    setAccounts(next);
-    saveLocal("accounts", next);
+    const { data, error } = await supabase
+      .from("accounts")
+      .insert({ user_id: user.id, name: accountName, balance: Number(accountBalance || 0) })
+      .select()
+      .single();
+    if (error) return alert(error.message);
+    setAccounts([...accounts, { id: data.id, name: data.name, balance: Number(data.balance || 0) }]);
     setAccountName("");
     setAccountBalance("");
     showPopup(language === "en" ? "Account added." : "계좌가 추가됐어요.", language === "en" ? "Account added" : "계좌 추가 완료", "🏦");
   };
 
-  const deleteAccount = (id) => {
-    const next = accounts.filter(a => a.id !== id);
-    setAccounts(next);
-    saveLocal("accounts", next);
+  const deleteAccount = async (id) => {
+    const { error } = await supabase.from("accounts").delete().eq("id", id).eq("user_id", user.id);
+    if (error) return alert(error.message);
+    setAccounts(accounts.filter(a => a.id !== id));
   };
 
-  const addCard = () => {
+  const addCard = async () => {
     if (!cardName || !cardPayDay) return alert(tr("cardRequired"));
-    const next = [...cards, { id: Date.now(), name: cardName, payDay: Number(cardPayDay) }];
-    setCards(next);
-    saveLocal("cards", next);
+    const { data, error } = await supabase
+      .from("cards")
+      .insert({ user_id: user.id, name: cardName, pay_day: Number(cardPayDay) })
+      .select()
+      .single();
+    if (error) return alert(error.message);
+    setCards([...cards, { id: data.id, name: data.name, payDay: Number(data.pay_day || 1) }]);
     setCardName("");
     setCardPayDay("");
     showPopup(language === "en" ? "Card added." : "카드가 추가됐어요.", language === "en" ? "Card added" : "카드 추가 완료", "💳");
   };
 
-  const deleteCard = (id) => {
-    const next = cards.filter(c => c.id !== id);
-    setCards(next);
-    saveLocal("cards", next);
+  const deleteCard = async (id) => {
+    const { error } = await supabase.from("cards").delete().eq("id", id).eq("user_id", user.id);
+    if (error) return alert(error.message);
+    setCards(cards.filter(c => c.id !== id));
   };
 
-  const addSub = () => {
+  const addSub = async () => {
     if (!subName || !subAmount) return alert(tr("subRequired"));
-    const next = [...subs, { id: Date.now(), name: subName, amount: Number(subAmount), day: Number(subDay || 1) }];
-    setSubs(next);
-    saveLocal("subs", next);
+    const { data, error } = await supabase
+      .from("subscriptions")
+      .insert({ user_id: user.id, name: subName, amount: Number(subAmount), day: Number(subDay || 1) })
+      .select()
+      .single();
+    if (error) return alert(error.message);
+    setSubs([...subs, { id: data.id, name: data.name, amount: Number(data.amount || 0), day: Number(data.day || 1) }]);
     setSubName("");
     setSubAmount("");
     setSubDay("");
     showPopup(language === "en" ? "Subscription added." : "구독이 추가됐어요.", language === "en" ? "Subscription added" : "구독 추가 완료", "📱");
   };
 
-  const deleteSub = (id) => {
-    const next = subs.filter(s => s.id !== id);
-    setSubs(next);
-    saveLocal("subs", next);
+  const deleteSub = async (id) => {
+    const { error } = await supabase.from("subscriptions").delete().eq("id", id).eq("user_id", user.id);
+    if (error) return alert(error.message);
+    setSubs(subs.filter(s => s.id !== id));
   };
 
   const today = new Date().getDate();
 
   const totalAccountBalance = accounts.reduce((sum, a) => sum + Number(a.balance || 0), 0);
+
+  // 거래 내역 기준으로 계좌 유형(moneyType)별 잔액 계산.
+  // 수입(+), 지출(−), 이체는 보낸 유형(−)·받은 유형(+)으로 반영. 기입 내역이 있는 유형만 노출.
+  const balanceByMoneyType = moneyTypes.map(mt => {
+    let balance = 0;
+    let count = 0;
+    for (const t of txs) {
+      const amt = Number(t.amount || 0);
+      if (t.type === "transfer") {
+        if (t.moneyType === mt) { balance -= amt; count++; }
+        if (t.transferTo === mt) { balance += amt; count++; }
+      } else if (t.moneyType === mt) {
+        balance += t.type === "income" ? amt : -amt;
+        count++;
+      }
+    }
+    return { type: mt, balance, count };
+  }).filter(x => x.count > 0);
+
+  const totalTypeBalance = balanceByMoneyType.reduce((sum, b) => sum + b.balance, 0);
   const totalSubMonthly = subs.reduce((sum, s) => sum + Number(s.amount || 0), 0);
 
   const currentMonthExpenseByBudget = budgets.reduce((sum, b) => {
@@ -1124,7 +1222,7 @@ export default function App() {
     if (newTypes.length) {
       const nextTypes = [...moneyTypes, ...newTypes];
       setMoneyTypes(nextTypes);
-      localStorage.setItem("moneyTypes", JSON.stringify(nextTypes));
+      await saveSettings({ money_types: nextTypes });
     }
 
     const savedTxs = [];
@@ -1603,6 +1701,7 @@ export default function App() {
             ["budget", "💗", "budget"],
             ["saving", "🐷", "saving"],
             ["assets", "🏦", "assets"],
+            ["balance", "💰", "balanceNav"],
             ["loan", "🏠", "loan"],
             ["subs", "📱", "subs"],
           ].map(([key, icon, label]) => (
@@ -1635,7 +1734,7 @@ export default function App() {
               value={language}
               onChange={(e) => {
                 setLanguage(e.target.value);
-                localStorage.setItem("language", e.target.value);
+                saveSettings({ language: e.target.value });
               }}
             >
               <option value="ko">🌐 KO</option>
@@ -1647,7 +1746,7 @@ export default function App() {
               value={currency}
               onChange={(e) => {
                 setCurrency(e.target.value);
-                localStorage.setItem("currency", e.target.value);
+                saveSettings({ currency: e.target.value });
               }}
             >
               {CURRENCY_OPTIONS.map(c => (
@@ -2171,6 +2270,36 @@ export default function App() {
           </>
         )}
 
+        {tab === "balance" && (
+          <>
+            <section className="banner asset-banner">
+              <div className="banner-lbl">{tr("balanceTotal")}</div>
+              <div className="banner-main">{won(totalTypeBalance)}</div>
+            </section>
+
+            <section className="card">
+              <div className="card-title">{tr("balanceTitle")}</div>
+              <div className="hint">{tr("balanceHint")}</div>
+
+              {balanceByMoneyType.length === 0 ? (
+                <div className="empty">{tr("balanceEmpty")}</div>
+              ) : (
+                <div className="asset-list">
+                  {balanceByMoneyType.map(b => (
+                    <div className="asset-item" key={b.type}>
+                      <div>
+                        <b>{b.type}</b>
+                        <span>{b.count}{tr("balanceEntryUnit")}</span>
+                      </div>
+                      <span className={`balance-amount ${b.balance < 0 ? "neg" : "pos"}`}>{won(b.balance)}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </section>
+          </>
+        )}
+
         {tab === "subs" && (
           <>
             <section className="banner sub-banner">
@@ -2298,7 +2427,7 @@ export default function App() {
                 value={language}
                 onChange={(e) => {
                   setLanguage(e.target.value);
-                  localStorage.setItem("language", e.target.value);
+                  saveSettings({ language: e.target.value });
                 }}
               >
                 <option value="ko">{tr("korean")}</option>
@@ -2313,7 +2442,7 @@ export default function App() {
                 value={currency}
                 onChange={(e) => {
                   setCurrency(e.target.value);
-                  localStorage.setItem("currency", e.target.value);
+                  saveSettings({ currency: e.target.value });
                 }}
               >
                 {CURRENCY_OPTIONS.map(c => (
@@ -2341,7 +2470,7 @@ export default function App() {
                     if (moneyTypes.includes(v)) return alert(tr("duplicateType"));
                     const next = [...moneyTypes, v];
                     setMoneyTypes(next);
-                    localStorage.setItem("moneyTypes", JSON.stringify(next));
+                    saveSettings({ money_types: next });
                     setNewMoneyType("");
                   }}
                 >
@@ -2360,7 +2489,7 @@ export default function App() {
                       if (moneyTypes.length <= 1) return alert(tr("minTypeRequired"));
                       const next = moneyTypes.filter(x => x !== mt);
                       setMoneyTypes(next);
-                      localStorage.setItem("moneyTypes", JSON.stringify(next));
+                      saveSettings({ money_types: next });
                       if (moneyType === mt) setMoneyType(next[0]);
                       if (transferTo === mt) setTransferTo(next[0]);
                     }}
