@@ -641,18 +641,24 @@ export default function App() {
         supabase.from("loans").select("*").eq("user_id", currentUser.id),
       ]);
 
-    setTxs((txData || []).map(t => ({
-      id: t.id,
-      type: t.type,
-      amount: Number(t.amount),
-      name: t.name,
-      category: t.category,
-      date: t.date,
-      repeat: t.repeat || "none",
-      moneyType: t.account || "계좌",
-      transferTo: "",
-      memo: t.memo || "",
-    })));
+    setTxs((txData || []).map(t => {
+      const transferMatch = t.memo && t.memo.startsWith("이체:")
+        ? t.memo.match(/이체:\s*(.+?)\s*→\s*(.+)/)
+        : null;
+
+      return {
+        id: t.id,
+        type: transferMatch ? "transfer" : t.type,
+        amount: Number(t.amount),
+        name: t.name,
+        category: t.category,
+        date: t.date,
+        repeat: t.repeat || "none",
+        moneyType: transferMatch ? transferMatch[1] : (t.account || "계좌"),
+        transferTo: transferMatch ? transferMatch[2] : "",
+        memo: t.memo || "",
+      };
+    }));
 
     setBudgets((budgetData || []).map(b => ({
       id: b.id,
@@ -894,16 +900,18 @@ export default function App() {
   const saveTx = async () => {
     if (!amount) return alert(tr("amountRequired"));
 
-    const finalType = moneyType !== transferTo && category === "이체" ? "transfer" : type;
+    if (type === "transfer" && moneyType === transferTo) {
+      return alert(ui("출금 계좌와 입금 계좌가 같아요. 다른 계좌를 선택해주세요.", "From and To accounts are the same. Please choose different accounts."));
+    }
 
     const baseTx = {
       id: editingTxId || Date.now(),
-      type: finalType,
+      type,
       amount: uncomma(amount),
-      name: name || category,
-      category,
+      name: type === "transfer" ? (name || ui("이체", "Transfer")) : (name || category),
+      category: type === "transfer" ? "이체" : category,
       moneyType,
-      transferTo: finalType === "transfer" ? transferTo : "",
+      transferTo: type === "transfer" ? transferTo : "",
       repeat,
       date: new Date().toISOString().slice(0, 10),
     };
@@ -985,7 +993,7 @@ export default function App() {
 
   const editTx = (tx) => {
     setEditingTxId(tx.id);
-    setType(tx.type === "transfer" ? "expense" : tx.type);
+    setType(tx.type);
     setAmount(comma(tx.amount));
     setName(tx.name || "");
     setCategory(tx.type === "transfer" ? "이체" : tx.category || "식비");
@@ -1923,7 +1931,7 @@ export default function App() {
                     <div className="tx-name">{t.name}</div>
                     <div className="tx-meta">
                       {t.date} · {catLabel(t.category)} · {moneyTypeLabel(t.moneyType || "계좌")}
-                      {t.type === "transfer" ? ` → ${moneyTypeLabel(t.transferTo)}` : ""}
+                      {t.type === "transfer" ? ` → ${t.transferTo ? moneyTypeLabel(t.transferTo) : tr("notEntered")}` : ""}
                       {t.repeat !== "none" ? ` · ${t.repeat === "monthly" ? tr("repeatMonthly") : tr("repeatWeekly")}` : ""}
                     </div>
                   </div>
