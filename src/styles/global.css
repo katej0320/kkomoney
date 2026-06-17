@@ -305,3 +305,150 @@ textarea{
     margin-top:12px !important;
   }
 }
+
+/* Transaction filter / sort */
+.tx-filter-card{
+  width:100%;
+  background:#fff7fb;
+  border:1px solid #f8bfd5;
+  border-radius:18px;
+  padding:16px;
+  margin-bottom:16px;
+}
+
+.tx-filter-row{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:12px;
+  align-items:end;
+}
+
+.filter-field{
+  display:flex;
+  flex-direction:column;
+  gap:7px;
+  min-width:0;
+}
+
+.filter-field label{
+  color:#e83b7d;
+  font-size:12px;
+  font-weight:900;
+}
+
+.tx-filter-summary{
+  margin-top:12px;
+  color:#9f6b80;
+  font-size:13px;
+}
+
+.tx-filter-summary b{
+  color:#e83b7d;
+}
+
+@media(max-width:1000px){
+  .tx-filter-row{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+}
+
+@media(max-width:600px){
+  .tx-filter-row{
+    grid-template-columns:1fr;
+  }
+}
+
+/* Transaction bulk select/delete */
+.tx-bulk-actions{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top:14px;
+}
+
+.bulk-btn{
+  border:none;
+  border-radius:999px;
+  background:#fff;
+  color:#e83b7d;
+  border:1px solid #f8bfd5;
+  height:38px;
+  padding:0 16px;
+  font-weight:900;
+  cursor:pointer;
+}
+
+.bulk-btn.danger{
+  background:#fff0f3;
+  color:#e24b4a;
+  border-color:#ffc9c9;
+}
+
+.bulk-btn:disabled{
+  opacity:.45;
+  cursor:not-allowed;
+}
+
+.tx-row{
+  grid-template-columns:auto minmax(0,1fr) auto auto !important;
+}
+
+.tx-row.selected{
+  border-color:#e83b7d !important;
+  background:#fff5f9 !important;
+}
+
+.tx-check{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:28px;
+  height:28px;
+  cursor:pointer;
+}
+
+.tx-check input{
+  display:none;
+}
+
+.tx-check span{
+  width:20px;
+  height:20px;
+  border-radius:7px;
+  border:2px solid #f0a9c4;
+  background:#fff;
+  display:block;
+  position:relative;
+}
+
+.tx-check input:checked + span{
+  background:#e83b7d;
+  border-color:#e83b7d;
+}
+
+.tx-check input:checked + span::after{
+  content:"";
+  position:absolute;
+  left:5px;
+  top:2px;
+  width:5px;
+  height:10px;
+  border:solid #fff;
+  border-width:0 2px 2px 0;
+  transform:rotate(45deg);
+}
+
+@media(max-width:760px){
+  .tx-row{
+    grid-template-columns:auto 1fr !important;
+  }
+
+  .tx-amt,
+  .tx-actions{
+    grid-column:2 / -1;
+  }
+
+  .tx-actions{
+    justify-content:flex-end;
+  }
+}

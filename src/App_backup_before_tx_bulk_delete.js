@@ -539,7 +539,6 @@ export default function App() {
   const [txStartDate, setTxStartDate] = useState("");
   const [txEndDate, setTxEndDate] = useState("");
   const [txSort, setTxSort] = useState("latest");
-  const [selectedTxIds, setSelectedTxIds] = useState([]);
   const [txs, setTxs] = useState([]);
   const [accounts, setAccounts] = useState(() => JSON.parse(localStorage.getItem("accounts") || "[]"));
   const [cards, setCards] = useState(() => JSON.parse(localStorage.getItem("cards") || "[]"));
@@ -1468,56 +1467,6 @@ export default function App() {
       return 0;
     });
 
-  const toggleTxSelect = (txId) => {
-    setSelectedTxIds(prev =>
-      prev.includes(txId)
-        ? prev.filter(id => id !== txId)
-        : [...prev, txId]
-    );
-  };
-
-  const toggleSelectAllTx = () => {
-    const visibleIds = filteredSortedTxs.map(t => t.id);
-    const allSelected =
-      visibleIds.length > 0 &&
-      visibleIds.every(id => selectedTxIds.includes(id));
-
-    if (allSelected) {
-      setSelectedTxIds(prev => prev.filter(id => !visibleIds.includes(id)));
-    } else {
-      setSelectedTxIds(prev => Array.from(new Set([...prev, ...visibleIds])));
-    }
-  };
-
-  const deleteSelectedTxs = async () => {
-    if (selectedTxIds.length === 0) return;
-
-    const ok = window.confirm(
-      language === "en"
-        ? `Delete ${selectedTxIds.length} selected transactions?`
-        : `선택한 ${selectedTxIds.length}개 내역을 삭제할까요?`
-    );
-
-    if (!ok) return;
-
-    const { error } = await supabase
-      .from("transactions")
-      .delete()
-      .in("id", selectedTxIds)
-      .eq("user_id", user.id);
-
-    if (error) return alert(error.message);
-
-    setTxs(txs.filter(t => !selectedTxIds.includes(t.id)));
-    setSelectedTxIds([]);
-
-    showPopup(
-      language === "en" ? "Selected transactions deleted." : "선택한 내역이 삭제됐어요.",
-      language === "en" ? "Deleted" : "삭제 완료",
-      "🗑️"
-    );
-  };
-
   if (loading) return <div className="auth-screen">{tr("loading")}</div>;
 
   if (!user) {
@@ -1837,25 +1786,6 @@ export default function App() {
 
               <div className="tx-filter-summary">
                 {language === "en" ? "Showing" : "표시 중"} <b>{filteredSortedTxs.length}</b>{language === "en" ? " transactions" : "건"}
-                {" · "}
-                {language === "en" ? "Selected" : "선택"} <b>{selectedTxIds.length}</b>{language === "en" ? "" : "개"}
-              </div>
-
-              <div className="tx-bulk-actions">
-                <button type="button" className="bulk-btn" onClick={toggleSelectAllTx}>
-                  {filteredSortedTxs.length > 0 && filteredSortedTxs.every(t => selectedTxIds.includes(t.id))
-                    ? (language === "en" ? "Clear all" : "전체 해제")
-                    : (language === "en" ? "Select all" : "전체 선택")}
-                </button>
-
-                <button
-                  type="button"
-                  className="bulk-btn danger"
-                  onClick={deleteSelectedTxs}
-                  disabled={selectedTxIds.length === 0}
-                >
-                  {language === "en" ? "Delete selected" : "선택 삭제"}
-                </button>
               </div>
             </div>
 
@@ -1873,15 +1803,7 @@ export default function App() {
 
             <div className="tx-list">
               {filteredSortedTxs.length === 0 ? <div className="empty">{tr("noTx")}</div> : filteredSortedTxs.map(t => (
-                <div className={`tx-row ${selectedTxIds.includes(t.id) ? "selected" : ""}`} key={t.id}>
-                  <label className="tx-check">
-                    <input
-                      type="checkbox"
-                      checked={selectedTxIds.includes(t.id)}
-                      onChange={() => toggleTxSelect(t.id)}
-                    />
-                    <span></span>
-                  </label>
+                <div className="tx-row" key={t.id}>
                   <div className="tx-info">
                     <div className="tx-name">{t.name}</div>
                     <div className="tx-meta">

@@ -532,14 +532,6 @@ export default function App() {
   const [tab, setTab] = useState("home");
   const [chartYear, setChartYear] = useState(new Date().getFullYear());
   const [chartMonth, setChartMonth] = useState(new Date().getMonth());
-
-  const thisMonthKey = new Date().toISOString().slice(0, 7);
-  const [txPeriodMode, setTxPeriodMode] = useState("month");
-  const [txSelectedMonth, setTxSelectedMonth] = useState(thisMonthKey);
-  const [txStartDate, setTxStartDate] = useState("");
-  const [txEndDate, setTxEndDate] = useState("");
-  const [txSort, setTxSort] = useState("latest");
-  const [selectedTxIds, setSelectedTxIds] = useState([]);
   const [txs, setTxs] = useState([]);
   const [accounts, setAccounts] = useState(() => JSON.parse(localStorage.getItem("accounts") || "[]"));
   const [cards, setCards] = useState(() => JSON.parse(localStorage.getItem("cards") || "[]"));
@@ -1442,82 +1434,6 @@ export default function App() {
     ? [...CATS_EXP, ...loanCategoryNames]
     : [...CATS_INC, ...loanCategoryNames];
 
-  const filteredSortedTxs = txs
-    .filter(t => {
-      if (!t.date) return true;
-
-      if (txPeriodMode === "month") {
-        return String(t.date).slice(0, 7) === txSelectedMonth;
-      }
-
-      if (txPeriodMode === "custom") {
-        if (txStartDate && t.date < txStartDate) return false;
-        if (txEndDate && t.date > txEndDate) return false;
-        return true;
-      }
-
-      return true;
-    })
-    .sort((a, b) => {
-      if (txSort === "latest") return new Date(b.date) - new Date(a.date);
-      if (txSort === "oldest") return new Date(a.date) - new Date(b.date);
-      if (txSort === "highest") return Number(b.amount) - Number(a.amount);
-      if (txSort === "lowest") return Number(a.amount) - Number(b.amount);
-      if (txSort === "income") return (b.type === "income") - (a.type === "income");
-      if (txSort === "expense") return (b.type === "expense") - (a.type === "expense");
-      return 0;
-    });
-
-  const toggleTxSelect = (txId) => {
-    setSelectedTxIds(prev =>
-      prev.includes(txId)
-        ? prev.filter(id => id !== txId)
-        : [...prev, txId]
-    );
-  };
-
-  const toggleSelectAllTx = () => {
-    const visibleIds = filteredSortedTxs.map(t => t.id);
-    const allSelected =
-      visibleIds.length > 0 &&
-      visibleIds.every(id => selectedTxIds.includes(id));
-
-    if (allSelected) {
-      setSelectedTxIds(prev => prev.filter(id => !visibleIds.includes(id)));
-    } else {
-      setSelectedTxIds(prev => Array.from(new Set([...prev, ...visibleIds])));
-    }
-  };
-
-  const deleteSelectedTxs = async () => {
-    if (selectedTxIds.length === 0) return;
-
-    const ok = window.confirm(
-      language === "en"
-        ? `Delete ${selectedTxIds.length} selected transactions?`
-        : `선택한 ${selectedTxIds.length}개 내역을 삭제할까요?`
-    );
-
-    if (!ok) return;
-
-    const { error } = await supabase
-      .from("transactions")
-      .delete()
-      .in("id", selectedTxIds)
-      .eq("user_id", user.id);
-
-    if (error) return alert(error.message);
-
-    setTxs(txs.filter(t => !selectedTxIds.includes(t.id)));
-    setSelectedTxIds([]);
-
-    showPopup(
-      language === "en" ? "Selected transactions deleted." : "선택한 내역이 삭제됐어요.",
-      language === "en" ? "Deleted" : "삭제 완료",
-      "🗑️"
-    );
-  };
-
   if (loading) return <div className="auth-screen">{tr("loading")}</div>;
 
   if (!user) {
@@ -1791,74 +1707,6 @@ export default function App() {
           <section className="card">
             <div className="card-title">{tr("txList")}</div>
 
-            <div className="tx-filter-card">
-              <div className="tx-filter-row">
-                <div className="filter-field">
-                  <label>{language === "en" ? "Period" : "기간"}</label>
-                  <select className="form-select" value={txPeriodMode} onChange={e => setTxPeriodMode(e.target.value)}>
-                    <option value="month">{language === "en" ? "Monthly" : "월별"}</option>
-                    <option value="custom">{language === "en" ? "Custom period" : "기간 설정"}</option>
-                    <option value="all">{language === "en" ? "All" : "전체"}</option>
-                  </select>
-                </div>
-
-                {txPeriodMode === "month" && (
-                  <div className="filter-field">
-                    <label>{language === "en" ? "Month" : "월 선택"}</label>
-                    <input className="form-input" type="month" value={txSelectedMonth} onChange={e => setTxSelectedMonth(e.target.value)} />
-                  </div>
-                )}
-
-                {txPeriodMode === "custom" && (
-                  <>
-                    <div className="filter-field">
-                      <label>{language === "en" ? "From" : "시작일"}</label>
-                      <input className="form-input" type="date" value={txStartDate} onChange={e => setTxStartDate(e.target.value)} />
-                    </div>
-                    <div className="filter-field">
-                      <label>{language === "en" ? "To" : "종료일"}</label>
-                      <input className="form-input" type="date" value={txEndDate} onChange={e => setTxEndDate(e.target.value)} />
-                    </div>
-                  </>
-                )}
-
-                <div className="filter-field">
-                  <label>{language === "en" ? "Sort" : "정렬"}</label>
-                  <select className="form-select" value={txSort} onChange={e => setTxSort(e.target.value)}>
-                    <option value="latest">{language === "en" ? "Latest first" : "최신순"}</option>
-                    <option value="oldest">{language === "en" ? "Oldest first" : "오래된순"}</option>
-                    <option value="highest">{language === "en" ? "Highest amount" : "금액 높은순"}</option>
-                    <option value="lowest">{language === "en" ? "Lowest amount" : "금액 낮은순"}</option>
-                    <option value="income">{language === "en" ? "Income first" : "수입 먼저"}</option>
-                    <option value="expense">{language === "en" ? "Expense first" : "지출 먼저"}</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="tx-filter-summary">
-                {language === "en" ? "Showing" : "표시 중"} <b>{filteredSortedTxs.length}</b>{language === "en" ? " transactions" : "건"}
-                {" · "}
-                {language === "en" ? "Selected" : "선택"} <b>{selectedTxIds.length}</b>{language === "en" ? "" : "개"}
-              </div>
-
-              <div className="tx-bulk-actions">
-                <button type="button" className="bulk-btn" onClick={toggleSelectAllTx}>
-                  {filteredSortedTxs.length > 0 && filteredSortedTxs.every(t => selectedTxIds.includes(t.id))
-                    ? (language === "en" ? "Clear all" : "전체 해제")
-                    : (language === "en" ? "Select all" : "전체 선택")}
-                </button>
-
-                <button
-                  type="button"
-                  className="bulk-btn danger"
-                  onClick={deleteSelectedTxs}
-                  disabled={selectedTxIds.length === 0}
-                >
-                  {language === "en" ? "Delete selected" : "선택 삭제"}
-                </button>
-              </div>
-            </div>
-
             <label className="file-upload-ui">
                 <input type="file" accept=".xlsx,.xls,.csv" onChange={handleExcelUpload} />
                 <span className="file-upload-btn">{language === "en" ? "Choose file" : "파일 선택"}</span>
@@ -1872,16 +1720,8 @@ export default function App() {
             </div>
 
             <div className="tx-list">
-              {filteredSortedTxs.length === 0 ? <div className="empty">{tr("noTx")}</div> : filteredSortedTxs.map(t => (
-                <div className={`tx-row ${selectedTxIds.includes(t.id) ? "selected" : ""}`} key={t.id}>
-                  <label className="tx-check">
-                    <input
-                      type="checkbox"
-                      checked={selectedTxIds.includes(t.id)}
-                      onChange={() => toggleTxSelect(t.id)}
-                    />
-                    <span></span>
-                  </label>
+              {txs.length === 0 ? <div className="empty">{tr("noTx")}</div> : txs.map(t => (
+                <div className="tx-row" key={t.id}>
                   <div className="tx-info">
                     <div className="tx-name">{t.name}</div>
                     <div className="tx-meta">
