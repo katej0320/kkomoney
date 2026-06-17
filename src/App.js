@@ -1656,68 +1656,95 @@ export default function App() {
             <section className="card quick-card">
               <div className="card-title">{editingTxId ? tr("editTx") : tr("quickInput")}</div>
 
-              <div className="type-toggle">
-                <button className={`type-btn ${type === "expense" ? "active-expense" : ""}`} onClick={() => {setType("expense"); setCategory("식비");}}>
-                  {tr("expenseButton")}
-                </button>
-                <button className={`type-btn ${type === "income" ? "active-income" : ""}`} onClick={() => {setType("income"); setCategory("월급");}}>
-                  {tr("incomeButton")}
-                </button>
+              <div className="qrow qrow-1">
+                <div className="type-toggle">
+                  <button className={`type-btn ${type === "expense" ? "active-expense" : ""}`} onClick={() => {setType("expense"); setCategory("식비");}}>
+                    {tr("expenseButton")}
+                  </button>
+                  <button className={`type-btn ${type === "income" ? "active-income" : ""}`} onClick={() => {setType("income"); setCategory("월급");}}>
+                    {tr("incomeButton")}
+                  </button>
+                  <button className={`type-btn ${type === "transfer" ? "active-transfer" : ""}`} onClick={() => {setType("transfer"); setCategory("이체");}}>
+                    {language === "en" ? "Transfer ↔" : "이체 ↔"}
+                  </button>
+                </div>
+
+                {type !== "transfer" && (
+                  <div className="form-group">
+                    <label className="form-label">{tr("amount")}</label>
+                    <input className="form-input" type="text" placeholder={language === "en" ? "Ex. 50,000" : "예: 50,000"} value={amount} onChange={e => setAmount(comma(e.target.value))} />
+                  </div>
+                )}
+
+                {type !== "transfer" && (
+                  <div className="form-group">
+                    <label className="form-label">{tr("memo")}</label>
+                    <input className="form-input" placeholder={language === "en" ? "Description" : "내용 입력"} value={name} onChange={e => setName(e.target.value)} />
+                  </div>
+                )}
+
+                {type !== "transfer" && (
+                  <div className="form-group">
+                    <label className="form-label">{tr("category")}</label>
+                    <select className="form-select" value={category} onChange={e => setCategory(e.target.value)}>
+                      {cats.map(c => <option key={c} value={c}>{catLabel(c)}</option>)}
+                    </select>
+                  </div>
+                )}
               </div>
 
-              <div className="form-group">
-                <label className="form-label">{tr("amount")}</label>
-                <input className="form-input" type="text" placeholder={language === "en" ? "Ex. 50,000" : "예: 50,000"} value={amount} onChange={e => setAmount(comma(e.target.value))} />
-              </div>
-
-              <div className="form-group">
-                <label className="form-label">{tr("memo")}</label>
-                <input className="form-input" placeholder={language === "en" ? "Description" : "내용 입력"} value={name} onChange={e => setName(e.target.value)} />
-              </div>
-
-              <div className="form-group">
-                <label className="form-label">{tr("category")}</label>
-                <select className="form-select" value={category} onChange={e => setCategory(e.target.value)}>
-                  {cats.map(c => <option key={c} value={c}>{catLabel(c)}</option>)}
-                  <option value="이체">{tr("transfer")}</option>
-                </select>
-              </div>
-
-              <div className="form-group">
-                <label className="form-label">{tr("moneyType")}</label>
-                <select className="form-select" value={moneyType} onChange={e => setMoneyType(e.target.value)}>
-                  {moneyTypes.map(mt => <option key={mt} value={mt}>{moneyTypeLabel(mt)}</option>)}
-                </select>
-              </div>
-
-              {category === "이체" && (
-                <div className="form-group">
-                  <label className="form-label">{tr("transferTo")}</label>
-                  <select className="form-select" value={transferTo} onChange={e => setTransferTo(e.target.value)}>
-                    {moneyTypes.map(mt => <option key={mt} value={mt}>{moneyTypeLabel(mt)}</option>)}
-                  </select>
-                  <div className="hint">{tr("transferHint")}</div>
+              {type === "transfer" && (
+                <div className="transfer-ui-row">
+                  <div className="transfer-ui-box">
+                    <div className="transfer-ui-label">{language === "en" ? "From" : "출금 계좌"}</div>
+                    <select className="form-select" value={moneyType} onChange={e => setMoneyType(e.target.value)}>
+                      {moneyTypes.map(mt => <option key={mt} value={mt}>{moneyTypeLabel(mt)}</option>)}
+                    </select>
+                  </div>
+                  <div className="transfer-ui-arrow">→</div>
+                  <div className="transfer-ui-box">
+                    <div className="transfer-ui-label">{language === "en" ? "To" : "입금 계좌"}</div>
+                    <select className="form-select" value={transferTo} onChange={e => setTransferTo(e.target.value)}>
+                      {moneyTypes.map(mt => <option key={mt} value={mt}>{moneyTypeLabel(mt)}</option>)}
+                    </select>
+                  </div>
+                  <div className="transfer-ui-box">
+                    <div className="transfer-ui-label">{language === "en" ? "Amount" : "금액"}</div>
+                    <input className="form-input" type="text" placeholder={language === "en" ? "Ex. 50,000" : "예: 50,000"} value={amount} onChange={e => setAmount(comma(e.target.value))} />
+                  </div>
+                  <button className="btn btn-primary" style={{height:"52px",alignSelf:"flex-end",minWidth:"90px"}} onClick={saveTx}>
+                    {editingTxId ? tr("updateSave") : tr("save")}
+                  </button>
                 </div>
               )}
 
-              <div className="form-group">
-                <label className="form-label">{tr("repeat")}</label>
-                <select className="form-select" value={repeat} onChange={e => setRepeat(e.target.value)}>
-                  <option value="none">{tr("noRepeat")}</option>
-                  <option value="monthly">{tr("monthlyRepeat")}</option>
-                  <option value="weekly">{tr("weeklyRepeat")}</option>
-                </select>
-              </div>
+              <div className="qrow qrow-2" style={{display: type === "transfer" ? "none" : "grid"}}>
+                <div className="form-group">
+                  <label className="form-label">{tr("moneyType")}</label>
+                  <select className="form-select" value={moneyType} onChange={e => setMoneyType(e.target.value)}>
+                    {moneyTypes.map(mt => <option key={mt} value={mt}>{moneyTypeLabel(mt)}</option>)}
+                  </select>
+                </div>
 
-              <div className="tx-button-row">
-                <button className="btn btn-primary" onClick={saveTx}>
-                  {editingTxId ? tr("updateSave") : tr("save")}
-                </button>
-                {editingTxId && (
-                  <button className="btn btn-secondary" onClick={cancelTxEdit}>
-                    {tr("cancel")}
+                <div className="form-group">
+                  <label className="form-label">{tr("repeat")}</label>
+                  <select className="form-select" value={repeat} onChange={e => setRepeat(e.target.value)}>
+                    <option value="none">{tr("noRepeat")}</option>
+                    <option value="monthly">{tr("monthlyRepeat")}</option>
+                    <option value="weekly">{tr("weeklyRepeat")}</option>
+                  </select>
+                </div>
+
+                <div className="tx-button-row">
+                  <button className="btn btn-primary" onClick={saveTx}>
+                    {editingTxId ? tr("updateSave") : tr("save")}
                   </button>
-                )}
+                  {editingTxId && (
+                    <button className="btn btn-secondary" onClick={cancelTxEdit}>
+                      {tr("cancel")}
+                    </button>
+                  )}
+                </div>
               </div>
             </section>
 
@@ -1802,26 +1829,6 @@ export default function App() {
                   </select>
                 </div>
 
-                {txPeriodMode === "month" && (
-                  <div className="filter-field">
-                    <label>{language === "en" ? "Month" : "월 선택"}</label>
-                    <input className="form-input" type="month" value={txSelectedMonth} onChange={e => setTxSelectedMonth(e.target.value)} />
-                  </div>
-                )}
-
-                {txPeriodMode === "custom" && (
-                  <>
-                    <div className="filter-field">
-                      <label>{language === "en" ? "From" : "시작일"}</label>
-                      <input className="form-input" type="date" value={txStartDate} onChange={e => setTxStartDate(e.target.value)} />
-                    </div>
-                    <div className="filter-field">
-                      <label>{language === "en" ? "To" : "종료일"}</label>
-                      <input className="form-input" type="date" value={txEndDate} onChange={e => setTxEndDate(e.target.value)} />
-                    </div>
-                  </>
-                )}
-
                 <div className="filter-field">
                   <label>{language === "en" ? "Sort" : "정렬"}</label>
                   <select className="form-select" value={txSort} onChange={e => setTxSort(e.target.value)}>
@@ -1834,6 +1841,28 @@ export default function App() {
                   </select>
                 </div>
               </div>
+
+              {txPeriodMode === "month" && (
+                <div className="tx-filter-sub">
+                  <div className="filter-field">
+                    <label>{language === "en" ? "Month" : "월 선택"}</label>
+                    <input className="form-input" type="month" value={txSelectedMonth} onChange={e => setTxSelectedMonth(e.target.value)} />
+                  </div>
+                </div>
+              )}
+
+              {txPeriodMode === "custom" && (
+                <div className="tx-filter-sub">
+                  <div className="filter-field">
+                    <label>{language === "en" ? "From" : "시작일"}</label>
+                    <input className="form-input" type="date" value={txStartDate} onChange={e => setTxStartDate(e.target.value)} />
+                  </div>
+                  <div className="filter-field">
+                    <label>{language === "en" ? "To" : "종료일"}</label>
+                    <input className="form-input" type="date" value={txEndDate} onChange={e => setTxEndDate(e.target.value)} />
+                  </div>
+                </div>
+              )}
 
               <div className="tx-filter-summary">
                 {language === "en" ? "Showing" : "표시 중"} <b>{filteredSortedTxs.length}</b>{language === "en" ? " transactions" : "건"}
@@ -1866,9 +1895,17 @@ export default function App() {
               </label>
 
             <div className="grid3">
-              <div className="sum-card"><div className="sum-lbl">{tr("income")}</div><div className="sum-val income">{won(income)}</div></div>
-              <div className="sum-card"><div className="sum-lbl">{tr("expense")}</div><div className="sum-val expense">{won(expense)}</div></div>
-              <div className="sum-card"><div className="sum-lbl">{tr("balance")}</div><div className="sum-val">{won(income - expense)}</div></div>
+              {(() => {
+                const filtIncome = filteredSortedTxs.filter(t => t.type === "income").reduce((s,t) => s + Number(t.amount), 0);
+                const filtExpense = filteredSortedTxs.filter(t => t.type === "expense").reduce((s,t) => s + Number(t.amount), 0);
+                return (
+                  <>
+                    <div className="sum-card"><div className="sum-lbl">{tr("income")}</div><div className="sum-val income">{won(filtIncome)}</div></div>
+                    <div className="sum-card"><div className="sum-lbl">{tr("expense")}</div><div className="sum-val expense">{won(filtExpense)}</div></div>
+                    <div className="sum-card"><div className="sum-lbl">{tr("balance")}</div><div className="sum-val">{won(filtIncome - filtExpense)}</div></div>
+                  </>
+                );
+              })()}
             </div>
 
             <div className="tx-list">
@@ -2322,7 +2359,7 @@ export default function App() {
           <section className="card">
             <div className="chart-month-head">
               <button className="month-arrow" onClick={() => moveChartMonth(-1)}>‹</button>
-              <div>
+              <div className="chart-month-center">
                 <div className="card-title">{tr("chart")}</div>
                 <div className="chart-month-title">{fmt("chartMonthTitle", { year: chartYear, month: chartMonth + 1 })}</div>
               </div>
@@ -2345,52 +2382,58 @@ export default function App() {
             </div>
 
             <div className="chart-grid">
-              <div className="chart-box">
-                <div className="card-title">income category</div>
+              <div className="card chart-inner-card">
+                <div className="card-title">{tr("incomeCategory")}</div>
                 {chartIncomeMap.length === 0 ? (
                   <div className="empty">{tr("noIncomeData")}</div>
                 ) : (
-                  <Doughnut
-                    data={{
-                      labels: chartIncomeMap.map(x => x.cat),
-                      datasets: [{
-                        label: tr("income"),
-                        data: chartIncomeMap.map(x => x.amount),
-                      }],
-                    }}
-                  />
+                  <div className="chart-box">
+                    <Doughnut
+                      data={{
+                        labels: chartIncomeMap.map(x => catLabel(x.cat)),
+                        datasets: [{
+                          label: tr("income"),
+                          data: chartIncomeMap.map(x => x.amount),
+                        }],
+                      }}
+                    />
+                  </div>
                 )}
               </div>
 
-              <div className="chart-box">
-                <div className="card-title">expense category</div>
+              <div className="card chart-inner-card">
+                <div className="card-title">{tr("expenseCategory")}</div>
                 {chartExpenseMap.length === 0 ? (
                   <div className="empty">{tr("noExpenseData")}</div>
                 ) : (
-                  <Doughnut
-                    data={{
-                      labels: chartExpenseMap.map(x => x.cat),
-                      datasets: [{
-                        label: tr("expense"),
-                        data: chartExpenseMap.map(x => x.amount),
-                      }],
-                    }}
-                  />
+                  <div className="chart-box">
+                    <Doughnut
+                      data={{
+                        labels: chartExpenseMap.map(x => catLabel(x.cat)),
+                        datasets: [{
+                          label: tr("expense"),
+                          data: chartExpenseMap.map(x => x.amount),
+                        }],
+                      }}
+                    />
+                  </div>
                 )}
               </div>
             </div>
 
-            <div className="chart-box wide">
-              <div className="card-title">income / expense</div>
-              <Bar
-                data={{
-                  labels: [tr("income"), tr("expense"), tr("balance")],
-                  datasets: [{
-                    label: fmt("chartDatasetMonth", { year: chartYear, month: chartMonth + 1 }),
-                    data: [chartMonthIncome, chartMonthExpense, chartMonthIncome - chartMonthExpense],
-                  }],
-                }}
-              />
+            <div className="card" style={{marginTop: "22px"}}>
+              <div className="card-title">{tr("incomeExpenseCompare")}</div>
+              <div className="chart-box wide">
+                <Bar
+                  data={{
+                    labels: [tr("income"), tr("expense"), tr("balance")],
+                    datasets: [{
+                      label: fmt("chartDatasetMonth", { year: chartYear, month: chartMonth + 1 }),
+                      data: [chartMonthIncome, chartMonthExpense, chartMonthIncome - chartMonthExpense],
+                    }],
+                  }}
+                />
+              </div>
             </div>
           </section>
         )}
