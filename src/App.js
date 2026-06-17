@@ -826,6 +826,10 @@ export default function App() {
   const income = realTxs.filter(t => t.type === "income").reduce((s,t) => s + Number(t.amount), 0);
   const expense = realTxs.filter(t => t.type === "expense").reduce((s,t) => s + Number(t.amount), 0);
 
+  const thisMonthRealTxs = realTxs.filter(t => t.date && String(t.date).slice(0, 7) === thisMonthKey);
+  const thisMonthIncome = thisMonthRealTxs.filter(t => t.type === "income").reduce((s,t) => s + Number(t.amount), 0);
+  const thisMonthExpense = thisMonthRealTxs.filter(t => t.type === "expense").reduce((s,t) => s + Number(t.amount), 0);
+
   const typeSummary = moneyTypes.map(mt => ({
     type: mt,
     income: txs.filter(t => t.type === "income" && t.moneyType === mt).reduce((s,t) => s + Number(t.amount), 0),
@@ -1041,6 +1045,7 @@ export default function App() {
 
     if (!rows.length) {
       alert(tr("excelNoData"));
+      event.target.value = "";
       return;
     }
 
@@ -1549,6 +1554,13 @@ export default function App() {
 
           <button className="auth-btn" onClick={login}>{tr("login")}</button>
           <button className="auth-btn secondary" onClick={signup}>{tr("signup")}</button>
+          <button className="auth-btn text-btn" onClick={async () => {
+            const em = prompt(language === "en" ? "Enter your email to reset password:" : "비밀번호 재설정할 이메일을 입력해주세요:");
+            if (!em) return;
+            const { error } = await supabase.auth.resetPasswordForEmail(em);
+            if (error) return alert(error.message);
+            showPopup(ui("비밀번호 재설정 이메일을 보냈어요. 메일함을 확인해주세요.", "Password reset email sent. Please check your inbox."), ui("이메일 발송", "Email sent"), "📧");
+          }}>{language === "en" ? "Forgot password?" : "비밀번호를 잊으셨나요?"}</button>
         </div>
       </div>
     );
@@ -1650,10 +1662,10 @@ export default function App() {
           <>
             <section className="banner hero-card">
               <div className="banner-lbl">{tr("remainingBudget")}</div>
-              <div className="banner-main">{won(income - expense)}</div>
+              <div className="banner-main">{won(thisMonthIncome - thisMonthExpense)}</div>
               <div className="banner-row">
-                <div className="banner-mini">{tr("income")}<span>{won(income)}</span></div>
-                <div className="banner-mini">{tr("expense")}<span>{won(expense)}</span></div>
+                <div className="banner-mini">{tr("income")}<span>{won(thisMonthIncome)}</span></div>
+                <div className="banner-mini">{tr("expense")}<span>{won(thisMonthExpense)}</span></div>
                 <div className="banner-mini">{tr("transfer")}<span>{tr("transferExcluded")}</span></div>
               </div>
               <div className="hero-pig" aria-hidden="true">🐷</div>
@@ -1666,10 +1678,10 @@ export default function App() {
 
               <div className="qrow qrow-1">
                 <div className="type-toggle">
-                  <button className={`type-btn ${type === "expense" ? "active-expense" : ""}`} onClick={() => {setType("expense"); setCategory("식비");}}>
+                  <button className={`type-btn ${type === "expense" ? "active-expense" : ""}`} onClick={() => {setType("expense"); setCategory("식비"); setMoneyType("계좌");}}>
                     {tr("expenseButton")}
                   </button>
-                  <button className={`type-btn ${type === "income" ? "active-income" : ""}`} onClick={() => {setType("income"); setCategory("월급");}}>
+                  <button className={`type-btn ${type === "income" ? "active-income" : ""}`} onClick={() => {setType("income"); setCategory("월급"); setMoneyType("계좌");}}>
                     {tr("incomeButton")}
                   </button>
                   <button className={`type-btn ${type === "transfer" ? "active-transfer" : ""}`} onClick={() => {setType("transfer"); setCategory("이체");}}>
@@ -1762,11 +1774,11 @@ export default function App() {
                 <div className="summary-list">
                   <div className="summary-row">
                     <div className="summary-left"><span className="round-icon income-bg">↑</span>{tr("income")}</div>
-                    <strong className="pink">{won(income)}</strong>
+                    <strong className="pink">{won(thisMonthIncome)}</strong>
                   </div>
                   <div className="summary-row">
                     <div className="summary-left"><span className="round-icon expense-bg">↓</span>{tr("expense")}</div>
-                    <strong className="blue">{won(expense)}</strong>
+                    <strong className="blue">{won(thisMonthExpense)}</strong>
                   </div>
                   <div className="summary-row">
                     <div className="summary-left"><span className="round-icon transfer-bg">↔</span>{tr("transfer")}</div>
